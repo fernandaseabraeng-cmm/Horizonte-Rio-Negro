@@ -1,0 +1,377 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel de Controle de SCs — HORIZONTE RIO NEGRO</title>
+<style>
+:root{--navy:#1B2C4E;--coral:#F15E40;--blue:#2F5CA8;--green:#23A45B;--bg:#EBEEF4;--muted:#64748B;--line:#E6EAF1}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Nunito,Arial,sans-serif;background:var(--bg);color:#1B2C4E;padding:22px;font-size:14px}
+.wrap{max-width:1300px;margin:0 auto}
+header{background:var(--navy);color:#fff;border-radius:16px;padding:22px 28px;box-shadow:0 6px 20px rgba(27,44,78,.18);border-bottom:5px solid var(--coral)}
+header h1{font-size:19px;font-weight:800;letter-spacing:.2px;line-height:1.2} header h1 b{color:var(--coral)}
+header p{opacity:.85;font-size:12.5px;margin-top:5px}
+.tabs{display:flex;gap:8px;margin:16px 0 0}
+.tab{padding:10px 20px;border-radius:12px 12px 0 0;background:#dfe5ef;color:var(--navy);font-weight:800;font-size:13px;cursor:pointer;user-select:none}
+.tab.on{background:#fff;color:var(--navy);box-shadow:0 -2px 8px rgba(27,44,78,.06)}
+.tab:hover{background:#eef2f8}
+.fbands{display:flex;gap:14px;flex-wrap:wrap;margin:18px 0 0}
+.fcard{flex:1;min-width:200px;background:#fff;border-radius:12px;padding:13px 16px;box-shadow:0 2px 10px rgba(27,44,78,.06);border-left:5px solid var(--coral)}
+.fcard .ft{font-weight:800;color:var(--navy);font-size:13.5px} .fcard .fs{font-weight:600;color:var(--muted);font-size:12px;margin-top:3px}
+.fcard.b{border-left-color:var(--blue)} .fcard.g{border-left-color:var(--green)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0}
+.kpi{background:#fff;border-radius:14px;padding:16px 18px;box-shadow:0 2px 10px rgba(27,44,78,.06);border-top:4px solid var(--coral)}
+.kpi .n{font-size:30px;font-weight:800;line-height:1;color:var(--navy)} .kpi .l{font-size:12px;color:var(--muted);margin-top:6px}
+.kpi.p{border-top-color:#E8A33D} .kpi.p .n{color:#D98A22}
+.kpi.a{border-top-color:var(--green)} .kpi.a .n{color:var(--green)}
+.kpi.b{border-top-color:var(--blue)} .kpi.b .n{color:var(--blue)}
+.ckpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0}
+.ckpi{background:#fff;border-radius:14px;padding:16px 20px;box-shadow:0 2px 10px rgba(27,44,78,.06);border-left:5px solid var(--navy)}
+.ckpi .cl{font-size:12px;color:var(--muted);font-weight:700} .ckpi .cn{font-size:24px;font-weight:800;color:var(--navy);margin-top:6px;letter-spacing:-.5px}
+.ckpi.com{border-left-color:var(--coral)} .ckpi.com .cn{color:#C2452A}
+.ckpi.vb{border-left-color:var(--green)} .ckpi.vb .cn{color:#127A44}
+.card{background:#fff;border-radius:16px;box-shadow:0 2px 10px rgba(27,44,78,.06);margin-bottom:20px;overflow:hidden}
+.card h2{background:#fff;color:var(--navy);font-size:14.5px;font-weight:800;padding:14px 20px;border-bottom:2px solid var(--line);display:flex;align-items:center;gap:10px}
+.card h2::before{content:"";width:9px;height:20px;background:var(--coral);border-radius:3px;display:inline-block}
+table{width:100%;border-collapse:collapse}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{background:var(--navy);color:#fff;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+td.num,th.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+td.vpos{color:#127A44;font-weight:700} td.vneg{color:#B0170A;font-weight:800}
+.uctag{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10.5px;font-weight:800;background:#FBE7DF;color:#B4472B}
+td.sc{font-weight:800;color:var(--navy);white-space:nowrap}
+td.ctr{text-align:center} td.det{font-size:12.5px;color:#33414f;line-height:1.5}
+tr.rowsc{cursor:pointer} tr.rowsc:hover{background:#F5F7FB}
+td.exp{width:26px;text-align:center;color:var(--coral);font-weight:800;font-size:16px}
+.tag{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.tag.mat{background:#DEE8F7;color:var(--blue)} .tag.serv{background:#FBE0D8;color:#B4472B}
+.st{display:inline-block;padding:4px 11px;border-radius:8px;font-size:11px;font-weight:800;white-space:nowrap}
+.st.pend{background:#FCEBCE;color:#96650B} .st.apr{background:#D6F0E1;color:#127A44}
+.st.rep{background:#FBD9D2;color:#B23A22} .st.ana{background:#E1E7F5;color:#2F5CA8}
+.drow>td{background:#FAFBFD;padding:0;border-bottom:2px solid var(--line)}
+.detail{padding:16px 20px}
+.grid2{display:grid;grid-template-columns:1.15fr .85fr;gap:22px}
+@media(max-width:820px){.grid2{grid-template-columns:1fr}}
+.detail h3{font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--navy);margin:2px 0 8px;font-weight:800} h3.mt{margin-top:14px}
+ol.aj{margin:0 0 0 18px;padding:0} ol.aj li{margin:6px 0;font-size:13px;line-height:1.55;color:#33414f}
+ul.good{margin:0;padding:0;list-style:none} ul.good li{margin:6px 0;font-size:12.5px;color:#127A44;position:relative;padding-left:16px}
+ul.good li::before{content:"✔";position:absolute;left:0;color:#23A45B;font-weight:800}
+.mtx table{width:100%;border-collapse:collapse} .mtx td.itn{font-size:12px;font-weight:600;color:#33414f;border:1px solid var(--line);padding:7px 9px}
+td.mc{text-align:center;font-weight:800;width:46px;border:1px solid var(--line)}
+.mok{background:#D6F0E1;color:#127A44} .mno{background:#FBD9D2;color:#B0170A} .mna{background:#EEF1F5;color:#8a8a8a}
+.meta{margin-top:12px;font-size:12px;color:#33414f;line-height:1.7;background:#F5F7FB;border-radius:8px;padding:10px 12px}
+.toolbar{background:#fff;border-radius:16px;box-shadow:0 2px 10px rgba(27,44,78,.06);padding:15px 20px;margin:20px 0;display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center}
+.toolbar input[type=text]{flex:1;min-width:220px;padding:10px 13px;border:1px solid #d3dae2;border-radius:10px;font-size:13px;font-family:inherit}
+.toolbar input[type=text]:focus{outline:none;border-color:var(--navy)}
+.fgroup{display:flex;gap:6px;flex-wrap:wrap;align-items:center} .fgroup .lbl{font-size:11px;color:var(--muted);margin-right:2px;font-weight:700}
+.chip{padding:7px 13px;border:1px solid #d3dae2;border-radius:20px;font-size:12px;font-weight:700;background:#fff;color:#33414f;cursor:pointer;user-select:none}
+.chip:hover{border-color:var(--navy)} .chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.count{font-size:12px;color:var(--muted);margin-left:auto} .count b{color:var(--navy)}
+.aprbox{background:#D6F0E1;color:#127A44;font-weight:800;font-size:13px;border-radius:8px;padding:11px 13px;border-left:4px solid var(--green)}
+.anabox{background:#E1E7F5;color:#24457E;font-weight:700;font-size:13px;border-radius:8px;padding:11px 13px;border-left:4px solid var(--blue)}
+.nodata{padding:18px;text-align:center;color:#96650B;font-size:13px;font-weight:700} .hide{display:none}
+.foot{font-size:11.5px;color:var(--muted);padding:13px 20px;line-height:1.6}
+</style></head><body><div class="wrap">
+<header><div class="htxt">
+<h1>Painel de Controle de Solicitações de Compra — <b>HORIZONTE RIO NEGRO</b></h1>
+<p>Obra 80807 · 2 torres · 286 unidades · atualizado a cada SC · Custo por Nível 14/08/2026</p>
+</div></header>
+
+<div class="tabs"><span class="tab on" data-tab="sc" onclick="pickTab(this)">Solicitações de Compra</span><span class="tab" data-tab="cu" onclick="pickTab(this)">Custo por Nível</span></div>
+
+<div id="tab-sc">
+<div class="fbands"><div class="fcard "><div class="ft">Fase 1 · Obra 80807</div><div class="fs">Torre 01 · 143 unidades</div></div><div class="fcard b"><div class="ft">Fase 2 · Obra 80807</div><div class="fs">Torre 02 · 143 unidades</div></div></div>
+
+<div class="kpis">
+<div class="kpi"><div class="n">25</div><div class="l">SCs no painel</div></div>
+<div class="kpi a"><div class="n">20</div><div class="l">Aprovadas</div></div>
+<div class="kpi p"><div class="n">5</div><div class="l">A ajustar</div></div>
+<div class="kpi p"><div class="n">6 / 19</div><div class="l">Material / Serviço</div></div>
+</div>
+
+<div class="toolbar">
+<input id="q" type="text" placeholder="Buscar por nº da SC, objeto ou responsável…" oninput="applyF()">
+<div class="fgroup"><span class="lbl">Status:</span>
+<span class="chip on" data-f="st" data-v="all" onclick="pick(this)">Todas</span>
+<span class="chip" data-f="st" data-v="apr" onclick="pick(this)">Aprovadas</span>
+<span class="chip" data-f="st" data-v="pend" onclick="pick(this)">A ajustar</span>
+</div>
+<div class="fgroup"><span class="lbl">Tipo:</span>
+<span class="chip on" data-f="tp" data-v="all" onclick="pick(this)">Todos</span>
+<span class="chip" data-f="tp" data-v="mat" onclick="pick(this)">Material</span>
+<span class="chip" data-f="tp" data-v="serv" onclick="pick(this)">Serviço</span></div>
+<div class="fgroup"><span class="lbl">Responsável:</span><span class="chip on" data-f="rp" data-v="all" onclick="pick(this)">Todos</span><span class="chip" data-f="rp" data-v="alan-lira" onclick="pick(this)">Alan Lira</span><span class="chip" data-f="rp" data-v="gabriel-ramos" onclick="pick(this)">Gabriel Ramos</span><span class="chip" data-f="rp" data-v="mardison-pimenta" onclick="pick(this)">Mardison Pimenta</span></div>
+<span class="count" id="cnt"></span>
+</div>
+
+<div class="card"><h2>Solicitações e ajustes — clique na linha para ver o detalhe</h2>
+<table><thead><tr><th></th><th>SC</th><th>Objeto</th><th>Tipo</th><th>Status</th><th>Detalhamento</th></tr></thead>
+<tbody>
+<tr class="rowsc" data-sc="1396675" data-st="apr" data-tp="serv" data-resp="gabriel-ramos" data-text="1396675-solicitacao-de-contratacao-de-empresa-especializada-em-servico-de-perfuracao-de-estaca-do-tipo-helice-continua:-gabriel-ramos-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1396675</td>
+<td>Solicitação de Contratação de Empresa Especializada em serviço de perfuração de estaca do tipo hélice contínua:</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1396675"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Apropriação:</b> Conferida na análise — registro na planilha de controle.<br><b>Verba:</b> —<br><b>Responsável:</b> Gabriel Ramos · <b>Cadastro:</b> 19/05/2026 · <b>Entrega:</b> 19/06/2026</div></div>
+</div></div></td></tr>
+<tr class="rowsc" data-sc="1396759" data-st="apr" data-tp="serv" data-resp="gabriel-ramos" data-text="1396759-estrutura-provisoria-inicial-de-canteiro-gabriel-ramos-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1396759</td>
+<td>Estrutura Provisória Inicial de Canteiro</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1396759"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mna">N/A</td></tr></tbody></table></div>
+<div class="meta"><b>Apropriação:</b> Conferida na análise — registro na planilha de controle.<br><b>Verba:</b> —<br><b>Responsável:</b> Gabriel Ramos · <b>Cadastro:</b> 21/05/2026 · <b>Entrega:</b> 01/06/2026</div></div>
+</div></div></td></tr>
+<tr class="rowsc" data-sc="1397141" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1397141-controle-teclonogico-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1397141</td>
+<td>Controle teclonógico</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno.</td></tr>
+<tr class="drow hide" data-for="1397141"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li>Anexar o <b>QC</b>.</li><li>Ajustar a <b>quantidade do QC</b>.</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Escopo detalhado do serviço anexado.</li><li>Cronograma anexado.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mno">X</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mno">X</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mna">N/A</td></tr></tbody></table></div>
+<div class="meta"><b>Apropriação:</b> Conferida na análise — registro na planilha de controle.<br><b>Verba:</b> —<br><b>Responsável:</b> Alan Lira · <b>Cadastro:</b> 03/06/2026 · <b>Entrega:</b> 08/06/2026</div></div>
+</div></div></td></tr>
+<tr class="rowsc" data-sc="1397140" data-st="apr" data-tp="mat" data-resp="gabriel-ramos" data-text="1397140-solicitacao-referente-ao-material-da-rede-de-drenagem-principal.-gabriel-ramos-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1397140</td>
+<td>Solicitação referente ao material da rede de drenagem principal.</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1397140"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mna">N/A</td></tr></tbody></table></div>
+<div class="meta"><b>Apropriação:</b> Conferida na análise — registro na planilha de controle.<br><b>Verba:</b> —<br><b>Responsável:</b> Gabriel Ramos · <b>Cadastro:</b> 08/06/2026 · <b>Entrega:</b> 08/06/2026</div></div>
+</div></div></td></tr>
+<tr class="rowsc" data-sc="1397265" data-st="apr" data-tp="mat" data-resp="alan-lira" data-text="1397265-muro-de-divisa-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1397265</td>
+<td>Muro de divisa</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1397265"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Projeto de referência anexado.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mna">N/A</td></tr></tbody></table></div>
+<div class="meta"><b>Apropriação:</b> Conferida na análise — registro na planilha de controle.<br><b>Verba:</b> —<br><b>Responsável:</b> Alan Lira · <b>Cadastro:</b> 08/06/2026 · <b>Entrega:</b> 08/06/2026</div></div>
+</div></div></td></tr>
+<tr class="rowsc" data-sc="1397435" data-st="apr" data-tp="serv" data-resp="gabriel-ramos" data-text="1397435-solicitacao-de-empresa-especializada-em-execucao-de-escavacao-de-estaca-escavada-com-trado-manual.-gabriel-ramos-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1397435</td>
+<td>Solicitação de empresa especializada em execução de escavação de estaca escavada com trado manual.</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1397435"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>SC com os códigos novos.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mna">N/A</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mna">N/A</td></tr></tbody></table></div>
+<div class="meta"><b>Apropriação:</b> Conferida na análise — registro na planilha de controle.<br><b>Verba:</b> —<br><b>Responsável:</b> Gabriel Ramos · <b>Cadastro:</b> 12/06/2026 · <b>Entrega:</b> 15/06/2026</div></div>
+</div></div></td></tr>
+<tr class="rowsc" data-sc="1397667" data-st="pend" data-tp="serv" data-resp="alan-lira" data-text="1397667-impermeabilizacao-interna-e-externa-da-caixa-de-retencao-319,89-m2.-alan-lira-ajustar" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1397667</td>
+<td>Impermeabilização interna e externa da caixa de retenção — 319,89 m².</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st pend">AJUSTAR</span></td><td class="det">Apropriação no QC divergente da SC.</td></tr>
+<tr class="drow hide" data-for="1397667"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li>Apropriação no <b>QC</b> divergente da SC.</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>SC com o código novo (14321).</li><li>Levantamento fecha com a SC: 220,69 m² de parede externa e 99,20 m² de interna, total 319,89 m².</li><li>Escopo, projeto da caixa de retenção e cronograma anexados.</li><li>Quantidade do QC igual à da SC: 319,89 m².</li><li>Apropriação certa: 05.001.003.001 – Caixa de retenção.</li><li>Data de entrega conforme a necessidade da obra.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mno">X</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Apropriação:</b> 05.001.003.001 – CAIXA DE RETENÇÃO (UC 2)<br><b>Verba:</b> 05.001.003.001 – CAIXA DE RETENÇÃO<br><b>Responsável:</b> Alan Lira · <b>Cadastro:</b> 22/06/2026 · <b>Entrega:</b> 20/09/2026</div></div>
+</div></div></td></tr>
+<tr class="rowsc" data-sc="1397915" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1397915-sc-para-aquisicao-de-material-para-estrutura-de-concreto-armado-do-bloco-de-coroamento-mao-de-obra-estacas-concreto-aco-forma-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1397915</td>
+<td>SC PARA AQUISIÇÃO DE MATERIAL PARA ESTRUTURA DE CONCRETO ARMADO DO BLOCO DE COROAMENTO MÃO DE OBRA ESTACAS CONCRETO AÇO FORMA</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: (6)Anexar Escopo, (7) e (8) anexar QC,(9)Anexar cronograma.</td></tr>
+<tr class="drow hide" data-for="1397915"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li>Anexar o <b>escopo detalhado</b> do serviço.</li><li>Anexar o <b>QC</b>.</li><li>Ajustar a <b>quantidade do QC</b>.</li><li>Anexar o <b>cronograma</b>.</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mno">X</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mno">X</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mno">X</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mno">X</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Apropriação:</b> Conferida na análise — registro na planilha de controle.<br><b>Verba:</b> —<br><b>Responsável:</b> Alan Lira · <b>Cadastro:</b> 30/06/2026 · <b>Entrega:</b> 11/08/2026</div></div>
+</div></div></td></tr>
+<tr class="rowsc" data-sc="1398110" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1398110-fabricacao-e-instalacao-de-2-reservatorios-metalicos-de-77-m3.-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1398110</td>
+<td>Fabricação e instalação de 2 reservatórios metálicos de 77 m³.</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1398110"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Código, descrição e quantidade (2 un) conferem com o orçamento.</li><li>Apropriação certa: 05.001.002.002 – Reservatório metálico.</li><li>A análise orçamentária do QC bate com a linha: 2 un a R$ 164.866,64.</li><li>Escopo, projeto do castelo d&#x27;água e cronograma anexados.</li><li>Data de entrega compatível com a necessidade da obra.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Apropriação:</b> 05.001.002.002 – RESERVATÓRIO METÁLICO (UC 2)<br><b>Verba:</b> 05.001.002.002 – RESERVATÓRIO METÁLICO<br><b>Responsável:</b> Alan Lira · <b>Cadastro:</b> 07/07/2026 · <b>Entrega:</b> 10/11/2026</div></div>
+</div></div></td></tr>
+<tr class="rowsc" data-sc="1398239" data-st="apr" data-tp="mat" data-resp="gabriel-ramos" data-text="1398239-solicitacao-de-material-referente-a-execucao-das-estacas-do-ed-garagem-e-reservatorio-metalico:-gabriel-ramos-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1398239</td>
+<td>Solicitação de material referente a execução das estacas do ed garagem e reservatório metálico:</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1398239"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mna">N/A</td></tr></tbody></table></div>
+<div class="meta"><b>Apropriação:</b> Conferida na análise — registro na planilha de controle.<br><b>Verba:</b> —<br><b>Responsável:</b> Gabriel Ramos · <b>Cadastro:</b> 10/07/2026 · <b>Entrega:</b> 10/07/2026</div></div>
+</div></div></td></tr>
+<tr class="rowsc" data-sc="1398532" data-st="apr" data-tp="serv" data-resp="gabriel-ramos" data-text="1398532-solicitacao-de-empresa-especializada-em-execucao-de-estaca-helice-continua-das-o-torres-do-empreendimento.-gabriel-ramos-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1398532</td>
+<td>Solicitação de empresa especializada em execução de estaca hélice contínua das o torres do empreendimento.</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1398532"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Apropriação:</b> Conferida na análise — registro na planilha de controle.<br><b>Verba:</b> —<br><b>Responsável:</b> Gabriel Ramos · <b>Cadastro:</b> 22/07/2026 · <b>Entrega:</b> 23/07/2026</div></div>
+</div></div></td></tr>
+<tr class="rowsc" data-sc="1398559" data-st="apr" data-tp="mat" data-resp="gabriel-ramos" data-text="1398559-solicitacao-de-material-para-execucao-das-estacas-de-fundacao-das-torres.-torre-1-e-2.-gabriel-ramos-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1398559</td>
+<td>Solicitação de material para execução das estacas de fundação das torres. Torre 1 e 2.</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1398559"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Apropriação:</b> Conferida na análise — registro na planilha de controle.<br><b>Verba:</b> —<br><b>Responsável:</b> Gabriel Ramos · <b>Cadastro:</b> 23/07/2026 · <b>Entrega:</b> 23/07/2026</div></div>
+</div></div></td></tr>
+<tr class="rowsc" data-sc="1398647" data-st="apr" data-tp="serv" data-resp="gabriel-ramos" data-text="1398647-solicitacao-para-contratacao-para-instalacoes-em-canteiro-gabriel-ramos-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1398647</td>
+<td>Solicitação para contratação para instalações em canteiro</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1398647"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Apropriação:</b> Conferida na análise — registro na planilha de controle.<br><b>Verba:</b> —<br><b>Responsável:</b> Gabriel Ramos · <b>Cadastro:</b> 27/07/2026 · <b>Entrega:</b> 27/07/2026</div></div>
+</div></div></td></tr>
+<tr class="rowsc" data-sc="1398776" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1398776-locacao-de-gerador-para-servicos-iniciais-e-ligacoes-provisorias-aditivo-no-cts/25573.-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1398776</td>
+<td>Locação de gerador para serviços iniciais e ligações provisórias — aditivo no CTS/25573.</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1398776"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>SC com o código novo.</li><li>Prazo de 3 meses conforme a observação.</li><li>Apropriação certa: 01.007.001.004 – Locação de gerador + diesel.</li><li>Escopo do serviço apresentado no QC.</li><li>QC compatível com o custo por nível.</li><li>Proposta emitida para a obra 80807.</li><li>Prazo de entrega dentro do SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Apropriação:</b> 01.007.001.004 – LOCAÇÃO DE GERADOR + DIESEL (UC 1)<br><b>Verba:</b> 01.007.001.004 – LOCAÇÃO DE GERADOR + DIESEL<br><b>Responsável:</b> Alan Lira · <b>Cadastro:</b> 29/07/2026 · <b>Entrega:</b> 05/09/2026</div></div>
+</div></div></td></tr>
+<tr class="rowsc" data-sc="1399001" data-st="apr" data-tp="serv" data-resp="gabriel-ramos" data-text="1399001-solicitacao-de-aditivo-para-reparo-de-container-em-obra.-cts-cts/24679.-unidade-quantidade-quantidade-quantidade-cotada-reservada-atendida-1,0000-un-0-gabriel-ramos-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399001</td>
+<td>Solicitação de aditivo para reparo de container em obra. CTS CTS/24679. Unidade Quantidade Quantidade Quantidade cotada reservada atendida 1,0000 un 0</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — autorizada e totalmente atendida.</td></tr>
+<tr class="drow hide" data-for="1399001"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>SC autorizada e totalmente atendida no SIENGE.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mna">N/A</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mna">N/A</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mna">N/A</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mna">N/A</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mna">N/A</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mna">N/A</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mna">N/A</td></tr></tbody></table></div>
+<div class="meta"><b>Apropriação:</b> —<br><b>Verba:</b> —<br><b>Responsável:</b> Gabriel Ramos · <b>Cadastro:</b> 05/08/2026 · <b>Entrega:</b> —</div></div>
+</div></div></td></tr>
+<tr class="rowsc" data-sc="1399004" data-st="apr" data-tp="serv" data-resp="gabriel-ramos" data-text="1399004-solicitacao-de-mobilizacao-de-container-em-obra.-empresa-habilitada-pela-locatario-do-container.-e-com-disponibilidade-em-tempo-agil-para-atender-a-de-gabriel-ramos-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399004</td>
+<td>Solicitação de mobilização de container em obra. Empresa habilitada pela locatário do container. e com disponibilidade em tempo ágil para atender a de</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — autorizada e totalmente atendida.</td></tr>
+<tr class="drow hide" data-for="1399004"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>SC autorizada e totalmente atendida no SIENGE.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mna">N/A</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mna">N/A</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mna">N/A</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mna">N/A</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mna">N/A</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mna">N/A</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mna">N/A</td></tr></tbody></table></div>
+<div class="meta"><b>Apropriação:</b> —<br><b>Verba:</b> —<br><b>Responsável:</b> Gabriel Ramos · <b>Cadastro:</b> 05/08/2026 · <b>Entrega:</b> —</div></div>
+</div></div></td></tr>
+<tr class="rowsc" data-sc="1399084" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1399084-sc-para-contratacao-de-empresa-para-diarias-de-servente-para-movimentacao-de-madeiras-da-obra-quantidade-de-pessoas-=-5-periodo-=-10-dias-total-de-dia-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399084</td>
+<td>SC PARA CONTRATAÇÃO DE EMPRESA PARA DIÁRIAS DE SERVENTE PARA MOVIMENTAÇÃO DE MADEIRAS DA OBRA QUANTIDADE DE PESSOAS = 5 PERÍODO = 10 DIAS TOTAL DE DIÁ</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1399084"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Apropriação:</b> Conferida na análise — registro na planilha de controle.<br><b>Verba:</b> —<br><b>Responsável:</b> Alan Lira · <b>Cadastro:</b> 06/08/2026 · <b>Entrega:</b> 11/08/2026</div></div>
+</div></div></td></tr>
+<tr class="rowsc" data-sc="1399118" data-st="apr" data-tp="mat" data-resp="alan-lira" data-text="1399118-material-para-instalacao-provisoria-da-obra-hidraulica,-eletrica-e-spda.-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399118</td>
+<td>Material para instalação provisória da obra — hidráulica, elétrica e SPDA.</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — apropriação corrigida e checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1399118"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>SC com os códigos novos.</li><li>As 41 quantidades conferem item a item com o levantamento.</li><li>Levantamento anexado.</li><li>Montagem de quadros (21213) já lançada na linha de mão de obra (01.007.003.002).</li><li>Data de entrega conforme a necessidade da obra.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Apropriação:</b> 01.007.003.001 – INSTALAÇÕES PROVISÓRIAS - CANTEIRO DE OBRAS (UC 1)<br><b>Verba:</b> 01.007.003.001 – INSTALAÇÕES PROVISÓRIAS - CANTEIRO DE OBRAS<br><b>Responsável:</b> Alan Lira · <b>Cadastro:</b> 07/08/2026 · <b>Entrega:</b> 15/09/2026</div></div>
+</div></div></td></tr>
+<tr class="rowsc" data-sc="1399150" data-st="pend" data-tp="serv" data-resp="alan-lira" data-text="1399150-contratacao-de-empresa-de-internet-wifi-para-uso-na-obra.-alan-lira-ajustar" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399150</td>
+<td>Contratação de empresa de internet wifi para uso na obra.</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st pend">AJUSTAR</span></td><td class="det">Confirmar a unidade e corrigir o QC; anexar cronograma.</td></tr>
+<tr class="drow hide" data-for="1399150"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li>Confirmar a <b>unidade</b>: orçamento em mês e SIENGE em und.</li><li>Corrigir a <b>unidade no QC</b> e excluir a linha CAMINHÃO MUNCK - LOCAÇÃO.</li><li>Anexar o <b>cronograma</b>.</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>SC com os códigos novos.</li><li>Descrição do insumo conforme o solicitado.</li><li>Apropriação certa: 01.003.001.004 – Internet / telefone - comunicação de dados.</li><li>Escopo do serviço detalhado na proposta.</li><li>Análise orçamentária do QC compatível com o custo por nível.</li><li>Data de entrega dentro do SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mno">X</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mno">X</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mno">X</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Apropriação:</b> 01.003.001.004 – INTERNET / TELEFONE - COMUNICAÇÃO DE DADOS (UC 1)<br><b>Verba:</b> 01.003.001.004 – INTERNET / TELEFONE - COMUNICAÇÃO DE DADOS<br><b>Responsável:</b> Alan Lira · <b>Cadastro:</b> 10/08/2026 · <b>Entrega:</b> 15/09/2026</div></div>
+</div></div></td></tr>
+<tr class="rowsc" data-sc="1399153" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1399153-fornecimento-de-refeicao-para-a-obra-contrato-provisorio,-agosto-a-dezembro-de-2026.-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399153</td>
+<td>Fornecimento de refeição para a obra — contrato provisório, agosto a dezembro de 2026.</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1399153"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>SC com os códigos novos.</li><li>Descrição dos insumos conforme o solicitado.</li><li>Apropriação certa: 01.002.001.001 – Encargos complementares.</li><li>Levantamento anexado: 466 na equipe administrativa e 170 na de apoio, total 636.</li><li>Escopo do serviço anexado.</li><li>QC compatível com o custo por nível.</li><li>Quantidade do QC igual à da SC.</li><li>Data de entrega compatível com a necessidade da obra.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Apropriação:</b> 01.002.001.001 – ENCARGOS COMPLEMENTARES (UC 1)<br><b>Verba:</b> 01.002.001.001 – ENCARGOS COMPLEMENTARES<br><b>Responsável:</b> Alan Lira · <b>Cadastro:</b> 10/08/2026 · <b>Entrega:</b> 15/09/2026</div></div>
+</div></div></td></tr>
+<tr class="rowsc" data-sc="1399180" data-st="pend" data-tp="serv" data-resp="alan-lira" data-text="1399180-ensaio-de-prova-de-carga-estatica-em-estacas-(pce).-alan-lira-ajustar" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399180</td>
+<td>Ensaio de prova de carga estática em estacas (PCE).</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st pend">AJUSTAR</span></td><td class="det">Verificar a quantidade e anexar o QC.</td></tr>
+<tr class="drow hide" data-for="1399180"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li><b>Quantidade</b>: SC 1 un e proposta 2 provas de carga. Verificar.</li><li>Anexar o <b>QC</b>.</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>SC com o código novo (15866), o mesmo do orçamento.</li><li>Apropriação certa: 01.005.001.003 – Prova de carga em estacas.</li><li>Escopo detalhado na proposta.</li><li>Data de entrega compatível com o cronograma das estacas.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mno">X</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mno">X</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mno">X</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Apropriação:</b> 01.005.001.003 – PROVA DE CARGA EM ESTACAS - PCE (UC 1)<br><b>Verba:</b> 01.005.001.003 – PROVA DE CARGA EM ESTACAS - PCE<br><b>Responsável:</b> Alan Lira · <b>Cadastro:</b> 10/08/2026 · <b>Entrega:</b> 15/09/2026</div></div>
+</div></div></td></tr>
+<tr class="rowsc" data-sc="1399151" data-st="pend" data-tp="serv" data-resp="alan-lira" data-text="1399151-locacao-de-impressora-para-uso-em-atividades-administrativas-da-obra.-alan-lira-ajustar" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399151</td>
+<td>Locação de impressora para uso em atividades administrativas da obra.</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st pend">AJUSTAR</span></td><td class="det">Confirmar a unidade, corrigir o QC e anexar o cronograma.</td></tr>
+<tr class="drow hide" data-for="1399151"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li>Confirmar a <b>unidade</b>: orçamento em und e SIENGE em mês.</li><li>Corrigir no <b>QC</b> a unidade, a quantidade, a descrição do serviço e o preço unitário.</li><li>Anexar o <b>cronograma</b>.</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>SC com os códigos novos.</li><li>Descrição do insumo conforme o solicitado.</li><li>Apropriação correta.</li><li>Escopo do serviço apresentado.</li><li>QC compatível com o custo por nível.</li><li>Prazo de entrega dentro do SLA.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mno">X</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mno">X</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mno">X</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Apropriação:</b> —<br><b>Verba:</b> —<br><b>Responsável:</b> Alan Lira · <b>Cadastro:</b> 10/08/2026 · <b>Entrega:</b> —</div></div>
+</div></div></td></tr>
+<tr class="rowsc" data-sc="1399193" data-st="apr" data-tp="serv" data-resp="mardison-pimenta" data-text="1399193-aditivo-do-cts/24679-locacao-do-container-guarita-e-do-container-escritorio.-mardison-pimenta-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399193</td>
+<td>Aditivo do CTS/24679 — locação do container guarita e do container escritório.</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1399193"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>SC com os códigos novos.</li><li>Descrição e quantidade conforme o solicitado.</li><li>Apropriação correta.</li><li>Escopo do serviço apresentado.</li><li>QC compatível com o custo por nível.</li><li>Prazo de entrega dentro do SLA.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Apropriação:</b> —<br><b>Verba:</b> —<br><b>Responsável:</b> Mardison Pimenta · <b>Cadastro:</b> 11/08/2026 · <b>Entrega:</b> —</div></div>
+</div></div></td></tr>
+<tr class="rowsc" data-sc="1399251" data-st="apr" data-tp="mat" data-resp="alan-lira" data-text="1399251-sc-para-aquisicao-de-1-reservatorios-de-combustivel-de-forma-provisoria-para-obra-para-abastecimento-de-gerador-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399251</td>
+<td>SC PARA AQUISIÇÃO DE 1 RESERVATÓRIOS DE COMBUSTÍVEL DE FORMA PROVISÓRIA PARA OBRA PARA ABASTECIMENTO DE GERADOR</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1399251"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Apropriação:</b> Conferida na análise — registro na planilha de controle.<br><b>Verba:</b> —<br><b>Responsável:</b> Alan Lira · <b>Cadastro:</b> 12/08/2026 · <b>Entrega:</b> 13/08/2026</div></div>
+</div></div></td></tr>
+<tr class="rowsc" data-sc="1399409" data-st="pend" data-tp="serv" data-resp="alan-lira" data-text="1399409-insumos-pendentes-para-execucao-de-estaca-helice-continua-torre-1,-torre-2-e-edificio-garagem.-alan-lira-ajustar" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399409</td>
+<td>Insumos pendentes para execução de estaca hélice contínua — Torre 1, Torre 2 e edifício garagem.</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st pend">AJUSTAR</span></td><td class="det">Prazo da retroescavadeira, apropriação do servente, escopo e QC.</td></tr>
+<tr class="drow hide" data-for="1399409"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li><b>Retroescavadeira</b>: 6 meses na SC e 4 meses na observação.</li><li><b>Servente</b> apropriado em linha de estaca.</li><li>Anexar o <b>escopo</b>.</li><li>Anexar o <b>QC</b>.</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>SC com os códigos novos.</li><li>Descrição dos insumos conforme o solicitado.</li><li>Levantamento do bota fora anexado.</li><li>Cronograma anexado.</li><li>Data de entrega conforme a necessidade da obra.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mno">X</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mno">X</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mno">X</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mno">X</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mno">X</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Apropriação:</b> 06.010.002.004 e 01.001.002.001 – Bota fora · 01.006.001.001 – Equipamentos<br><b>Verba:</b> 06.010.002.004 · 01.001.002.001 · 01.006.001.001<br><b>Responsável:</b> Alan Lira · <b>Cadastro:</b> 18/08/2026 · <b>Entrega:</b> 15/09/2026</div></div>
+</div></div></td></tr>
+</tbody></table>
+<div class="nodata hide" id="nodata">Nenhuma SC encontrada com esses filtros.</div></div>
+</div>
+
+<div id="tab-cu" class="hide">
+<div class="toolbar"><span class="count">Custo por Nível (SIENGE) · snapshot 14/08/2026 · verba = orçado − comprometido</span></div>
+<div class="ckpis">
+<div class="ckpi orc"><div class="cl">Orçado (obra)</div><div class="cn">R$ 73.670.575,75</div></div>
+<div class="ckpi com"><div class="cl">Comprometido</div><div class="cn">R$ 4.932.415,15</div></div>
+<div class="ckpi vb"><div class="cl">Verba disponível</div><div class="cn">R$ 68.738.160,60</div></div>
+</div>
+<div class="card"><h2>Unidade construtiva</h2>
+<table><thead><tr><th>Unidade construtiva</th><th class="num">Orçado</th><th class="num">Comprometido</th><th class="num">Verba disp.</th></tr></thead>
+<tbody><tr><td>1 - ADMINISTRAÇÃO DA OBRA</td><td class="num">R$ 15.111.422,93</td><td class="num">R$ 350.145,85</td><td class="num vpos">R$ 14.761.277,08</td></tr><tr><td>2 - INFRA E URBANIZAÇÃO</td><td class="num">R$ 12.489.555,94</td><td class="num">R$ 2.651.355,79</td><td class="num vpos">R$ 9.838.200,15</td></tr><tr><td>3 - TORRES</td><td class="num">R$ 46.069.596,88</td><td class="num">R$ 1.930.913,51</td><td class="num vpos">R$ 44.138.683,37</td></tr></tbody></table></div>
+<div class="card"><h2>Principais grupos (por comprometido)</h2>
+<table><thead><tr><th>UC</th><th>Grupo</th><th class="num">Orçado</th><th class="num">Comprometido</th><th class="num">Verba disp.</th></tr></thead>
+<tbody><tr><td><span class="uctag">3</span></td><td>01.001 · FUNDAÇÃO</td><td class="num">R$ 2.610.609,67</td><td class="num">R$ 1.930.913,51</td><td class="num vpos">R$ 679.696,16</td></tr><tr><td><span class="uctag">2</span></td><td>02.001 · TERRAPLANAGEM E CONTENÇÕES</td><td class="num">R$ 1.058.381,36</td><td class="num">R$ 956.015,52</td><td class="num vpos">R$ 102.365,84</td></tr><tr><td><span class="uctag">2</span></td><td>06.010 · EDIFICIO GARAGEM</td><td class="num">R$ 6.218.504,12</td><td class="num">R$ 627.943,66</td><td class="num vpos">R$ 5.590.560,46</td></tr><tr><td><span class="uctag">2</span></td><td>07.001 · MURO DE DIVISA</td><td class="num">R$ 411.194,66</td><td class="num">R$ 445.392,70</td><td class="num vneg">-R$ 34.198,04</td></tr><tr><td><span class="uctag">2</span></td><td>05.001 · RESERVATÓRIOS</td><td class="num">R$ 989.020,09</td><td class="num">R$ 426.795,91</td><td class="num vpos">R$ 562.224,18</td></tr><tr><td><span class="uctag">1</span></td><td>01.001 · EQUIPE/ RECURSOS HUMANOS</td><td class="num">R$ 7.321.831,65</td><td class="num">R$ 210.300,00</td><td class="num vpos">R$ 7.111.531,65</td></tr><tr><td><span class="uctag">1</span></td><td>01.007 · SERVIÇOS PRELIMINARES</td><td class="num">R$ 1.668.714,16</td><td class="num">R$ 96.956,42</td><td class="num vpos">R$ 1.571.757,74</td></tr><tr><td><span class="uctag">2</span></td><td>01.001 · SERVIÇOS TOPOGRÁFICOS</td><td class="num">R$ 102.000,00</td><td class="num">R$ 65.000,00</td><td class="num vpos">R$ 37.000,00</td></tr></tbody></table></div>
+</div>
+
+<div class="foot">Painel atualizado a cada SC analisada. Custo por Nível é snapshot diário (verba = orçado − comprometido); snapshot 14/08/2026. Orçamento executivo e cronograma da obra ainda sujeitos a alteração.</div>
+</div>
+<script>
+var fSt='all', fTp='all', fRp='all';
+function pickTab(el){var t=el.getAttribute('data-tab');
+ document.querySelectorAll('.tab').forEach(function(c){c.classList.remove('on');}); el.classList.add('on');
+ document.getElementById('tab-sc').classList.toggle('hide',t!=='sc');
+ document.getElementById('tab-cu').classList.toggle('hide',t!=='cu');}
+function pick(el){var f=el.getAttribute('data-f'),v=el.getAttribute('data-v');
+ document.querySelectorAll('.chip[data-f="'+f+'"]').forEach(function(c){c.classList.remove('on');});
+ el.classList.add('on'); if(f==='st'){fSt=v;}else if(f==='tp'){fTp=v;}else{fRp=v;} applyF();}
+function toggle(row){var sc=row.getAttribute('data-sc');var d=document.querySelector('.drow[data-for="'+sc+'"]');
+ if(!d)return; var open=d.classList.toggle('hide')===false; row.querySelector('.exp').textContent=open?'−':'+';}
+function applyF(){var q=document.getElementById('q').value.toLowerCase().trim();
+ var rows=[].slice.call(document.querySelectorAll('tr.rowsc'));var total=0;
+ rows.forEach(function(r){var okS=(fSt==='all')||(r.getAttribute('data-st')===fSt);
+  var okT=(fTp==='all')||(r.getAttribute('data-tp')===fTp);
+  var okR=(fRp==='all')||(r.getAttribute('data-resp')===fRp);
+  var okQ=(q==='')||(r.getAttribute('data-text').indexOf(q)>=0);var show=okS&&okT&&okR&&okQ;
+  r.classList.toggle('hide',!show);var d=document.querySelector('.drow[data-for="'+r.getAttribute('data-sc')+'"]');
+  if(!show){if(d)d.classList.add('hide');r.querySelector('.exp').textContent='+';} if(show)total++;});
+ document.getElementById('nodata').classList.toggle('hide',total>0);
+ document.getElementById('cnt').innerHTML=total===0?'Nenhum resultado':'Mostrando <b>'+total+'</b> SC(s)';}
+applyF();
+</script>
+</body></html>
