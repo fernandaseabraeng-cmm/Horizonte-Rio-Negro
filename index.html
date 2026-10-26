@@ -1,0 +1,995 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel de Controle de SCs — HORIZONTE RIO NEGRO</title>
+<style>
+:root{--navy:#1B2C4E;--coral:#F15E40;--blue:#2F5CA8;--green:#23A45B;--bg:#EBEEF4;--muted:#64748B;--line:#E6EAF1}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Nunito,Arial,sans-serif;background:var(--bg);color:#1B2C4E;padding:22px;font-size:14px}
+.wrap{max-width:1300px;margin:0 auto}
+header{background:var(--navy);color:#fff;border-radius:16px;padding:22px 28px;box-shadow:0 6px 20px rgba(27,44,78,.18);border-bottom:5px solid var(--coral)}
+header h1{font-size:19px;font-weight:800;letter-spacing:.2px;line-height:1.2} header h1 b{color:var(--coral)}
+header p{opacity:.85;font-size:12.5px;margin-top:5px}
+.tabs{display:flex;gap:8px;margin:16px 0 0}
+.tab{padding:10px 20px;border-radius:12px 12px 0 0;background:#dfe5ef;color:var(--navy);font-weight:800;font-size:13px;cursor:pointer;user-select:none}
+.tab.on{background:#fff;color:var(--navy);box-shadow:0 -2px 8px rgba(27,44,78,.06)}
+.tab:hover{background:#eef2f8}
+.fbands{display:flex;gap:14px;flex-wrap:wrap;margin:18px 0 0}
+.fcard{flex:1;min-width:200px;background:#fff;border-radius:12px;padding:13px 16px;box-shadow:0 2px 10px rgba(27,44,78,.06);border-left:5px solid var(--coral)}
+.fcard .ft{font-weight:800;color:var(--navy);font-size:13.5px} .fcard .fs{font-weight:600;color:var(--muted);font-size:12px;margin-top:3px}
+.fcard.b{border-left-color:var(--blue)} .fcard.g{border-left-color:var(--green)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0}
+.kpi{background:#fff;border-radius:14px;padding:16px 18px;box-shadow:0 2px 10px rgba(27,44,78,.06);border-top:4px solid var(--coral)}
+.kpi .n{font-size:30px;font-weight:800;line-height:1;color:var(--navy)} .kpi .l{font-size:12px;color:var(--muted);margin-top:6px}
+.kpi.p{border-top-color:#E8A33D} .kpi.p .n{color:#D98A22}
+.kpi.a{border-top-color:var(--green)} .kpi.a .n{color:var(--green)}
+.kpi.b{border-top-color:var(--blue)} .kpi.b .n{color:var(--blue)}
+.ckpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0}
+.ckpi{background:#fff;border-radius:14px;padding:16px 20px;box-shadow:0 2px 10px rgba(27,44,78,.06);border-left:5px solid var(--navy)}
+.ckpi .cl{font-size:12px;color:var(--muted);font-weight:700} .ckpi .cn{font-size:24px;font-weight:800;color:var(--navy);margin-top:6px;letter-spacing:-.5px}
+.ckpi.com{border-left-color:var(--coral)} .ckpi.com .cn{color:#C2452A}
+.ckpi.vb{border-left-color:var(--green)} .ckpi.vb .cn{color:#127A44}
+.card{background:#fff;border-radius:16px;box-shadow:0 2px 10px rgba(27,44,78,.06);margin-bottom:20px;overflow:hidden}
+.card h2{background:#fff;color:var(--navy);font-size:14.5px;font-weight:800;padding:14px 20px;border-bottom:2px solid var(--line);display:flex;align-items:center;gap:10px}
+.card h2::before{content:"";width:9px;height:20px;background:var(--coral);border-radius:3px;display:inline-block}
+table{width:100%;border-collapse:collapse}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{background:var(--navy);color:#fff;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+td.num,th.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+td.vpos{color:#127A44;font-weight:700} td.vneg{color:#B0170A;font-weight:800}
+.uctag{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10.5px;font-weight:800;background:#FBE7DF;color:#B4472B}
+td.sc{font-weight:800;color:var(--navy);white-space:nowrap}
+td.ctr{text-align:center} td.det{font-size:12.5px;color:#33414f;line-height:1.5}
+tr.rowsc{cursor:pointer} tr.rowsc:hover{background:#F5F7FB}
+td.exp{width:26px;text-align:center;color:var(--coral);font-weight:800;font-size:16px}
+.tag{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.tag.mat{background:#DEE8F7;color:var(--blue)} .tag.serv{background:#FBE0D8;color:#B4472B}
+.st{display:inline-block;padding:4px 11px;border-radius:8px;font-size:11px;font-weight:800;white-space:nowrap}
+.st.pend{background:#FCEBCE;color:#96650B} .st.apr{background:#D6F0E1;color:#127A44}
+.st.rep{background:#FBD9D2;color:#B23A22} .st.ana{background:#E1E7F5;color:#2F5CA8}
+.drow>td{background:#FAFBFD;padding:0;border-bottom:2px solid var(--line)}
+.detail{padding:16px 20px}
+.grid2{display:grid;grid-template-columns:1.15fr .85fr;gap:22px}
+@media(max-width:820px){.grid2{grid-template-columns:1fr}}
+.detail h3{font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--navy);margin:2px 0 8px;font-weight:800} h3.mt{margin-top:14px}
+ol.aj{margin:0 0 0 18px;padding:0} ol.aj li{margin:6px 0;font-size:13px;line-height:1.55;color:#33414f}
+ul.good{margin:0;padding:0;list-style:none} ul.good li{margin:6px 0;font-size:12.5px;color:#127A44;position:relative;padding-left:16px}
+ul.good li::before{content:"✔";position:absolute;left:0;color:#23A45B;font-weight:800}
+.mtx table{width:100%;border-collapse:collapse} .mtx td.itn{font-size:12px;font-weight:600;color:#33414f;border:1px solid var(--line);padding:7px 9px}
+td.mc{text-align:center;font-weight:800;width:46px;border:1px solid var(--line)}
+.mok{background:#D6F0E1;color:#127A44} .mno{background:#FBD9D2;color:#B0170A} .mna{background:#EEF1F5;color:#8a8a8a}
+.meta{margin-top:12px;font-size:12px;color:#33414f;line-height:1.7;background:#F5F7FB;border-radius:8px;padding:10px 12px}
+.toolbar{background:#fff;border-radius:16px;box-shadow:0 2px 10px rgba(27,44,78,.06);padding:15px 20px;margin:20px 0;display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center}
+.toolbar input[type=text]{flex:1;min-width:220px;padding:10px 13px;border:1px solid #d3dae2;border-radius:10px;font-size:13px;font-family:inherit}
+.toolbar input[type=text]:focus{outline:none;border-color:var(--navy)}
+.fgroup{display:flex;gap:6px;flex-wrap:wrap;align-items:center} .fgroup .lbl{font-size:11px;color:var(--muted);margin-right:2px;font-weight:700}
+.chip{padding:7px 13px;border:1px solid #d3dae2;border-radius:20px;font-size:12px;font-weight:700;background:#fff;color:#33414f;cursor:pointer;user-select:none}
+.chip:hover{border-color:var(--navy)} .chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.count{font-size:12px;color:var(--muted);margin-left:auto} .count b{color:var(--navy)}
+.aprbox{background:#D6F0E1;color:#127A44;font-weight:800;font-size:13px;border-radius:8px;padding:11px 13px;border-left:4px solid var(--green)}
+.anabox{background:#E1E7F5;color:#24457E;font-weight:700;font-size:13px;border-radius:8px;padding:11px 13px;border-left:4px solid var(--blue)}
+.nodata{padding:18px;text-align:center;color:#96650B;font-size:13px;font-weight:700} .hide{display:none}
+.foot{font-size:11.5px;color:var(--muted);padding:13px 20px;line-height:1.6}
+</style>
+</head><body><div class="wrap">
+<header><div class="htxt">
+<h1>Painel de Controle de Solicitações de Compra — <b>HORIZONTE RIO NEGRO</b></h1>
+<p>Centros de custo 80807 e 80800 · 2 torres · 286 unidades · atualizado a cada SC · Custo por Nível 26/10/2026</p>
+</div></header>
+
+<div class="tabs"><span class="tab on" data-tab="sc" onclick="pickTab(this)">Solicitações de Compra</span><span class="tab" data-tab="cu" onclick="pickTab(this)">Custo por Nível</span></div>
+
+<div id="tab-sc">
+<div class="fbands"><div class="fcard "><div class="ft">Fase 1 · Obra 80807</div><div class="fs">Torre 01 · 143 unidades</div></div><div class="fcard b"><div class="ft">Fase 2 · Obra 80807</div><div class="fs">Torre 02 · 143 unidades</div></div></div>
+
+<div class="kpis" style="grid-template-columns:repeat(4,1fr)">
+<div class="kpi"><div class="n">73</div><div class="l">SCs no painel</div></div>
+<div class="kpi a"><div class="n">69</div><div class="l">Aprovadas</div></div>
+<div class="kpi p"><div class="n">4</div><div class="l">A ajustar</div></div>
+
+<div class="kpi p"><div class="n">29 / 44</div><div class="l">Material / Serviço</div></div>
+</div>
+
+<div class="toolbar">
+<input id="q" type="text" placeholder="Buscar por nº da SC, objeto ou responsável…" oninput="applyF()">
+<div class="fgroup"><span class="lbl">Status:</span>
+<span class="chip on" data-f="st" data-v="all" onclick="pick(this)">Todas</span>
+<span class="chip" data-f="st" data-v="apr" onclick="pick(this)">Aprovadas</span>
+<span class="chip" data-f="st" data-v="pend" onclick="pick(this)">A ajustar</span>
+
+</div>
+<div class="fgroup"><span class="lbl">Tipo:</span>
+<span class="chip on" data-f="tp" data-v="all" onclick="pick(this)">Todos</span>
+<span class="chip" data-f="tp" data-v="mat" onclick="pick(this)">Material</span>
+<span class="chip" data-f="tp" data-v="serv" onclick="pick(this)">Serviço</span></div>
+<div class="fgroup"><span class="lbl">Responsável:</span><span class="chip on" data-f="rp" data-v="all" onclick="pick(this)">Todos</span><span class="chip" data-f="rp" data-v="alan-lira" onclick="pick(this)">Alan Lira</span><span class="chip" data-f="rp" data-v="caio-silva" onclick="pick(this)">Caio Silva</span><span class="chip" data-f="rp" data-v="ecivan-lima" onclick="pick(this)">Ecivan Lima</span><span class="chip" data-f="rp" data-v="gabriel-ramos" onclick="pick(this)">Gabriel Ramos</span><span class="chip" data-f="rp" data-v="mardison-pimenta" onclick="pick(this)">Mardison Pimenta</span><span class="chip" data-f="rp" data-v="nisvaldo-graca" onclick="pick(this)">Nisvaldo Graca</span></div>
+<span class="count" id="cnt"></span>
+</div>
+
+<div class="card"><h2>Solicitações e ajustes — clique na linha para ver o detalhe</h2>
+<table><thead><tr><th></th><th>SC</th><th>Objeto</th><th>Tipo</th><th>Status</th><th>Detalhamento</th></tr></thead>
+<tbody>
+<tr class="rowsc" data-sc="1396675" data-st="apr" data-tp="serv" data-resp="gabriel-ramos" data-text="1396675-solicitacao-de-contratacao-de-empresa-especializada-em-servico-de-perfuracao-de-estaca-do-tipo-helice-continua-gabriel-ramos-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1396675</td>
+<td>Solicitação de Contratação de Empresa Especializada em serviço de perfuração de estaca do tipo hélice contínua:</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1396675"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Gabriel Ramos · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 19/05/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 19/06/2026 · <b>Analisada:</b> 19/06/2026 · <b>Revisão:</b> —<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1396759" data-st="apr" data-tp="serv" data-resp="gabriel-ramos" data-text="1396759-estrutura-provisoria-inicial-de-canteiro-gabriel-ramos-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1396759</td>
+<td>Estrutura Provisória Inicial de Canteiro</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1396759"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mna">N/A</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Gabriel Ramos · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 21/05/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 01/06/2026 · <b>Analisada:</b> 01/06/2026 · <b>Revisão:</b> —<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1397141" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1397141-controle-teclonogico-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1397141</td>
+<td>Controle teclonógico</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1397141"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Cronograma anexado.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mna">N/A</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 03/06/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 08/06/2026 · <b>Analisada:</b> 08/06/2026 · <b>Revisão:</b> 08/06/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1397140" data-st="apr" data-tp="mat" data-resp="gabriel-ramos" data-text="1397140-solicitacao-referente-ao-material-da-rede-de-drenagem-principal-gabriel-ramos-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1397140</td>
+<td>Solicitação referente ao material da rede de drenagem principal.</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1397140"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mna">N/A</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Gabriel Ramos · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 08/06/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 08/06/2026 · <b>Analisada:</b> 08/06/2026 · <b>Revisão:</b> —<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1397265" data-st="apr" data-tp="mat" data-resp="alan-lira" data-text="1397265-muro-de-divisa-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1397265</td>
+<td>Muro de divisa</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1397265"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Projeto de referência anexado.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mna">N/A</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 08/06/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 08/06/2026 · <b>Analisada:</b> 09/06/2026 · <b>Revisão:</b> —<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1397435" data-st="apr" data-tp="serv" data-resp="gabriel-ramos" data-text="1397435-solicitacao-de-empresa-especializada-em-execucao-de-escavacao-de-estaca-escavada-com-trado-manual-gabriel-ramos-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1397435</td>
+<td>Solicitação de empresa especializada em execução de escavação de estaca escavada com trado manual.</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1397435"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>SC com os códigos novos.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mna">N/A</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mna">N/A</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Gabriel Ramos · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 12/06/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 15/06/2026 · <b>Analisada:</b> 15/06/2026 · <b>Revisão:</b> —<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1397667" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1397667-sc-para-contratacao-de-empresa-para-servico-de-impermeabilizacao-de-caixa-de-retencao-servico-de-impermeabilizacao-interna-e-externa-de-caixa-de-retencao-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1397667</td>
+<td>SC para contratação de empresa para serviço de impermeabilização de caixa de retenção
+serviço de impermeabilização interna e externa de caixa de retenção</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: Análise orçamentária incompatível com o custo por nível…</td></tr>
+<tr class="drow hide" data-for="1397667"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li>Análise orçamentária incompatível com o custo por nível</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Escopo detalhado do serviço anexado.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mno">X</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 22/06/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 11/08/2026 · <b>Analisada:</b> 13/08/2026 · <b>Revisão:</b> 21/08/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1397915" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1397915-sc-para-aquisicao-de-material-para-estrutura-de-concreto-armado-do-bloco-de-coroamento-mao-de-obra-estacas-concreto-aco-forma-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1397915</td>
+<td>SC para aquisição de material para estrutura de concreto armado do bloco de coroamento
+mão de obra
+estacas
+concreto
+aço
+forma</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — sc ajustada</td></tr>
+<tr class="drow hide" data-for="1397915"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Situação</h3><div class="anabox">sc ajustada</div></div>
+<div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 30/06/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 11/08/2026 · <b>Analisada:</b> 13/08/2026 · <b>Revisão:</b> 13/08/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1398110" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1398110-sc-para-contratacao-de-empresa-especializada-em-servico-de-fabricacao-e-instalacao-de-reservatorio-metalico-2-reservatorios-metalicos-de-77m3-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1398110</td>
+<td>SC para contratação de empresa especializada em serviço de fabricação e instalação de reservatório METÁLICO
+2 reservatórios metálicos de 77M³</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: Levantamento ausente; Escopo ausente; QC ausente; Cronograma ausente; Projetos de referência ausente…</td></tr>
+<tr class="drow hide" data-for="1398110"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li><b>(5)</b> Levantamento ausente</li><li><b>(6)</b> Escopo ausente</li><li><b>(7/8)</b> QC ausente</li><li><b>(9)</b> Cronograma ausente</li><li><b>(10)</b> Projetos de referência ausente</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mno">X</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mno">X</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mno">X</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mno">X</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mno">X</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 07/07/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 13/08/2026 · <b>Analisada:</b> 14/08/2026 · <b>Revisão:</b> 18/08/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1398239" data-st="apr" data-tp="mat" data-resp="gabriel-ramos" data-text="1398239-solicitacao-de-material-referente-a-execucao-das-estacas-do-ed-garagem-e-reservatorio-metalico-gabriel-ramos-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1398239</td>
+<td>Solicitação de material referente a execução das estacas do ed garagem e reservatório metálico:</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1398239"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mna">N/A</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Gabriel Ramos · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 10/07/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 10/07/2026 · <b>Analisada:</b> 10/07/2026 · <b>Revisão:</b> —<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1398532" data-st="apr" data-tp="serv" data-resp="gabriel-ramos" data-text="1398532-solicitacao-de-empresa-especializada-em-execucao-de-estaca-helice-continua-das-o-torres-do-empreendimento-gabriel-ramos-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1398532</td>
+<td>Solicitação de empresa especializada em execução de estaca hélice contínua das o torres do empreendimento.</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1398532"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Gabriel Ramos · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 22/07/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 23/07/2026 · <b>Analisada:</b> 23/07/2026 · <b>Revisão:</b> —<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1398559" data-st="apr" data-tp="mat" data-resp="gabriel-ramos" data-text="1398559-solicitacao-de-material-para-execucao-das-estacas-de-fundacao-das-torres-torre-1-e-2-gabriel-ramos-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1398559</td>
+<td>Solicitação de material para execução das estacas de fundação das torres.
+Torre 1 e 2.</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1398559"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Gabriel Ramos · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 23/07/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 23/07/2026 · <b>Analisada:</b> 23/07/2026 · <b>Revisão:</b> —<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1398647" data-st="apr" data-tp="serv" data-resp="gabriel-ramos" data-text="1398647-solicitacao-para-contratacao-para-instalacoes-em-canteiro-gabriel-ramos-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1398647</td>
+<td>Solicitação para contratação para instalações em canteiro</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1398647"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Gabriel Ramos · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 27/07/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 27/07/2026 · <b>Analisada:</b> 27/07/2026 · <b>Revisão:</b> —<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1398776" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1398776-sc-para-locacao-de-gerador-para-servicos-iniciais-e-ligacoes-provisorias-da-obra-aditivo-no-cts-25573-gerador-de-40-kva-por-2-meses-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1398776</td>
+<td>SC para locação de gerador para serviços iniciais e ligações provisórias da obra
+
+aditivo no CTS/25573
+
+GERADOR de 40 KVA por 2 meses</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: SC 40 KVA e proposta 55 KVA; SC 3 meses e observação 2 meses; Falta apropriação da mobilização/desmobilização (01.007.00…</td></tr>
+<tr class="drow hide" data-for="1398776"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li><b>(2)</b> SC 40 KVA e proposta 55 KVA</li><li><b>(3)</b> SC 3 meses e observação 2 meses</li><li><b>(4)</b> Falta apropriação da mobilização/desmobilização (01.007.001.003)</li><li><b>(7)</b> QC com comprometido zerado e proposta emitida para CAP 80</li><li><b>(8)</b> Apropriação 01.007.001.003 não consta no sienge</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>SC com os códigos novos.</li><li>Escopo detalhado do serviço anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mno">X</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mno">X</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mno">X</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mno">X</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mno">X</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 29/07/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 11/08/2026 · <b>Analisada:</b> 14/08/2026 · <b>Revisão:</b> 20/08/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399084" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1399084-sc-para-contratacao-de-empresa-para-diarias-de-servente-para-movimentacao-de-madeiras-da-obra-quantidade-de-pessoas-5-periodo-10-dias-total-de-diarias-50-diarias-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399084</td>
+<td>SC para contratação de empresa para diárias de servente para movimentação de madeiras da obra
+
+quantidade de pessoas = 5
+
+PERÍODO = 10 dias
+
+total de diárias = 50 diárias</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1399084"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 06/08/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 11/08/2026 · <b>Analisada:</b> 13/08/2026 · <b>Revisão:</b> —<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399118" data-st="apr" data-tp="mat" data-resp="alan-lira" data-text="1399118-sc-para-aquisicao-de-material-para-instalacao-provisoria-da-obra-instalacao-hidraulica-eletrica-spda-baia-de-tubos-necessidade-de-material-seja-em-compra-local-devido-a-carater-de-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399118</td>
+<td>SC para aquisição de material para instalação provisória da obra
+
+instalação - hidráulica / elétrica / SPDA / baia de tubos
+
+necessidade de material seja em compra local devido a carater de</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: 21213 e quadro de medição são mão de obra e devem ir para 01.007.003.002…</td></tr>
+<tr class="drow hide" data-for="1399118"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li><b>(4)</b> 21213 e quadro de medição são mão de obra e devem ir para 01.007.003.002</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Levantamento anexado e compatível com o solicitado.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mno">X</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mno">X</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mno">X</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 07/08/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 11/08/2026 · <b>Analisada:</b> 14/08/2026 · <b>Revisão:</b> 18/08/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399150" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1399150-sc-para-contratacao-de-empresa-de-internet-wifi-para-uso-na-obra-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399150</td>
+<td>SC para contratação de empresa de internet WIFI para uso na obra</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: Unidades de medida divergentes no orçamento (mês) e no sienge (und), confirmar a correta; Corrigir unidade de medida e E…</td></tr>
+<tr class="drow hide" data-for="1399150"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li><b>(3)</b> Unidades de medida divergentes no orçamento (mês) e no sienge (und), confirmar a correta</li><li><b>(8)</b> Corrigir unidade de medida e Excluir “CAMINHÃO MUNCK - LOCAÇÃO”, pois a descrição não corresponde ao serviço solicitado (Monitoramento Eletrônico Internet IP)</li><li><b>(9)</b> Anexar cronograma ausente</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>SC com os códigos novos.</li><li>Apropriação correta para a natureza do insumo.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mno">X</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mno">X</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mno">X</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 10/08/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 11/08/2026 · <b>Analisada:</b> 13/08/2026 · <b>Revisão:</b> 20/08/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399151" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1399151-sc-para-locacao-de-impressora-para-uso-em-atividades-administrativas-da-obra-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399151</td>
+<td>SC para locação de impressora para uso em atividades administrativas da obra</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: Unidades de medida divergentes no orçamento (und) e no sienge (mês), confirmar a correta; Corrigir unidade de medida, qu…</td></tr>
+<tr class="drow hide" data-for="1399151"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li><b>(3)</b> Unidades de medida divergentes no orçamento (und) e no sienge (mês), confirmar a correta</li><li><b>(8)</b> Corrigir unidade de medida, quantidade, descrição do serviço e preço unitário no QC</li><li><b>(9)</b> Anexar cronograma ausente</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>SC com os códigos novos.</li><li>Apropriação correta para a natureza do insumo.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mno">X</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mno">X</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mno">X</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 10/08/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 11/08/2026 · <b>Analisada:</b> 13/08/2026 · <b>Revisão:</b> 20/08/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399153" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1399153-sc-para-contratacao-de-empresa-para-fornecimento-de-refeicao-para-a-obra-contrato-provisorio-inicial-para-fornecimento-de-refeicao-da-obra-quantitativo-definido-de-forma-estimativa-conform-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399153</td>
+<td>SC para contratação de empresa para fornecimento de refeição para a obra
+contrato provisório inicial para fornecimento de refeição da obra - quantitativo definido de forma estimativa conform</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — sc ajustada</td></tr>
+<tr class="drow hide" data-for="1399153"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Situação</h3><div class="anabox">sc ajustada</div></div>
+<div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 10/08/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 11/08/2026 · <b>Analisada:</b> 14/08/2026 · <b>Revisão:</b> 20/08/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399180" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1399180-sc-para-contratacao-de-empresa-para-realizacao-de-ensaio-de-prova-de-carga-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399180</td>
+<td>SC para contratação de empresa para realização de ensaio de prova de carga</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: Escopo com 6 provas de carga e a sc com 2; Confirmar a proposta: a REV 00 é de 2 provas a R$ 35.300,00 e o QC usa R$ 35.…</td></tr>
+<tr class="drow hide" data-for="1399180"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li><b>(6)</b> Escopo com 6 provas de carga e a sc com 2</li><li><b>(7)</b> Confirmar a proposta: a REV 00 é de 2 provas a R$ 35.300,00 e o QC usa R$ 35.100,00 da REV 01, que é de 6 provas</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mno">X</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mno">X</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 10/08/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 11/08/2026 · <b>Analisada:</b> 14/08/2026 · <b>Revisão:</b> 08/09/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399193" data-st="apr" data-tp="serv" data-resp="mardison-pimenta" data-text="1399193-cts-24679-jumar-sc-para-aditivo-do-cts-24679-referente-a-locacao-do-container-guarita-e-container-escritorio-01-container-10-pes-guarita-01-container-20-pes-escritorio-administrativo-mardison-pimenta-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399193</td>
+<td>CTS/24679 jumar 
+
+SC para aditivo do CTS/24679
+REFERENTE a locação do container guarita e container escritorio 
+
+01 container 10 pés (GUARITA)
+01 container 20 pés (escritório administrativo</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: Verificar necessidade de uma apropriação para a MOBILIZAÇÃO E DESMOBILIZAÇÃO (01.007.001.001) no sienge; anexar cronogra…</td></tr>
+<tr class="drow hide" data-for="1399193"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li>Verificar necessidade de uma apropriação para a MOBILIZAÇÃO E DESMOBILIZAÇÃO (01.007.001.001) no sienge</li><li><b>(9)</b> anexar cronograma,</li><li><b>(11)</b> ajustar prazo SLA</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mno">X</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mno">X</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Mardison Pimenta · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 11/08/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 11/08/2026 · <b>Analisada:</b> 14/08/2026 · <b>Revisão:</b> 18/08/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399251" data-st="apr" data-tp="mat" data-resp="alan-lira" data-text="1399251-sc-para-aquisicao-de-1-reservatorios-de-combustivel-de-forma-provisoria-para-obra-para-abastecimento-de-gerador-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399251</td>
+<td>SC para aquisição de 1 reservatórios de combustível de forma provisória para obra para abastecimento de gerador</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1399251"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 12/08/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 13/08/2026 · <b>Analisada:</b> 13/08/2026 · <b>Revisão:</b> —<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399255" data-st="apr" data-tp="mat" data-resp="alan-lira" data-text="1399255-sc-para-aquisicao-de-material-para-execucao-de-edificio-garagem-estrutra-gabarito-aco-concreto-vedacoes-alvenaria-cobogo-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399255</td>
+<td>SC para aquisição de material para execução de edifício garagem
+
+estrutra
+
+- gabarito
+- aço
+- concreto
+
+vedações
+
+- alvenaria
+- cobogó</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: Ajustar cronograma…</td></tr>
+<tr class="drow hide" data-for="1399255"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li><b>(5)</b> Ajustar cronograma</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mno">X</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 12/08/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 13/08/2026 · <b>Analisada:</b> 14/08/2026 · <b>Revisão:</b> 18/08/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1398434" data-st="apr" data-tp="serv" data-resp="gabriel-ramos" data-text="1398434-contratacao-de-empresa-especializada-em-servico-de-terraplanagem-descricao-cts-23970-aditivo-de-contrato-para-aumento-de-servico-escavacao-e-reaterro-da-caixa-de-retardo-do-empreendime-gabriel-ramos-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1398434</td>
+<td>Contratação de empresa especializada em serviço de terraplanagem.
+
+Descrição: CTS/23970 - ADITIVO DE CONTRATO PARA AUMENTO DE SERVIÇO. ESCAVAÇÃO E REATERRO DA CAIXA DE RETARDO DO EMPREENDIME</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: Levantamento ausente; Acertar o preço do aterro no QC: proposta R$ 12,80 e QC R$ 12,30, preencher a análise orçamentária…</td></tr>
+<tr class="drow hide" data-for="1398434"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li><b>(5)</b> Levantamento ausente</li><li><b>(7)</b> Acertar o preço do aterro no QC: proposta R$ 12,80 e QC R$ 12,30, preencher a análise orçamentária e corrigir o objeto do QC para terraplanagem</li><li><b>(10)</b> Projeto ausente. Informar se a movimentação e empilhamento de madeira da proposta vai ser solicitada</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Escopo detalhado do serviço anexado.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mno">X</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mno">X</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mno">X</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Gabriel Ramos · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 17/08/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 27/08/2026 · <b>Analisada:</b> 28/08/2026 · <b>Revisão:</b> 03/09/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399409" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1399409-sc-para-insumos-pendentes-para-execucao-de-estaca-helice-continua-da-obra-torre-1-torre-2-e-edificio-garagem-periodo-01-09-2026-a-30-12-2026-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399409</td>
+<td>SC para insumos pendentes para execução de estaca hélice contínua da obra (torre 1, torre 2 e edifício garagem) - período 01/09/2026 a 30/12/2026</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: retroescavadeira 6 meses na sc e 4 meses na observação. servente apropriado em linha de estaca. escopo e QC ausentes…</td></tr>
+<tr class="drow hide" data-for="1399409"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li>retroescavadeira 6 meses na sc e 4 meses na observação. servente apropriado em linha de estaca. escopo e QC ausentes</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>SC com os códigos novos.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Cronograma anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mno">X</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mno">X</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mno">X</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mno">X</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mno">X</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 18/08/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 20/08/2026 · <b>Analisada:</b> 20/08/2026 · <b>Revisão:</b> 21/08/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399444" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1399444-sc-para-locacao-de-conteiner-banheiro-para-infraestrutura-de-canteiro-incluso-material-de-instalacao-e-fossa-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399444</td>
+<td>SC para locação de conteiner banheiro para infraestrutura de canteiro
+incluso material de instalação e fossa</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1399444"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 20/08/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 24/08/2026 · <b>Analisada:</b> 25/08/2026 · <b>Revisão:</b> 25/08/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399543" data-st="apr" data-tp="mat" data-resp="alan-lira" data-text="1399543-sc-para-aquisicao-de-material-de-agua-fria-da-obra-rede-de-agua-hidrometro-alimentacao-de-castelos-alimentacao-de-torre-alimentacao-de-anexos-alimentacao-e-ramais-de-guarita-alimentacao-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399543</td>
+<td>SC para aquisição de material de água fria da obra
+
+- rede de água:
+
+hidrômetro
+alimentação de castelos
+alimentação de torre
+alimentação de anexos
+alimentação e ramais de guarita
+alimentação</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: Acertar as quantidades: 23284 curva 45° PBA 50/60 mm, a sc pede 4 un e o levantamento traz 10. 21982 curva 45° PBA 75/85…</td></tr>
+<tr class="drow hide" data-for="1399543"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li><b>(3)</b> Acertar as quantidades: 23284 curva 45° PBA 50/60 mm, a sc pede 4 un e o levantamento traz 10. 21982 curva 45° PBA 75/85 mm, a sc pede 23 un e o levantamento traz 15. 23528 luva de correr PBA 50/60 mm, a sc pede 2 un e o levantamento traz 4. 23529 luva de correr PBA 85/75 mm, a sc pede 6 un e o levantamento traz 4. 13751 joelho SRM 90° 25 mm x 1/2&quot;, a sc pede 25 un e o levantamento traz 27, e em compensação a sc pede 2 un do 17838 (joelho SRM 25 mm x 3/4&quot;) e 3 un do 17843 (luva SRM 25 mm x 3/4&quot;), que estão zerados no levantamento</li><li><b>(4)</b> 13153 adaptador 60 mm x 2&quot;: a sc apropriou as 2 un em 04.001.001.001 rede e o levantamento classifica em 04.002.001.001 equipamentos urbanos</li><li><b>(5)</b> Anexar o cronograma</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>SC com os códigos novos.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mno">X</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mno">X</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mno">X</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 24/08/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 02/09/2026 · <b>Analisada:</b> 03/09/2026 · <b>Revisão:</b> 17/09/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399576" data-st="apr" data-tp="mat" data-resp="alan-lira" data-text="1399576-sc-para-aquisicao-de-material-de-rede-de-esgoto-do-empreendimento-rede-de-esgoto-guarita-lazer-360-das-torres-rede-coletora-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399576</td>
+<td>SC para aquisição de material de rede de esgoto do empreendimento
+
+rede de ESGOTO:
+
+GUARITA
+LAZER
+360 das torres
+rede coletora</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1399576"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 25/08/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 02/09/2026 · <b>Analisada:</b> 03/09/2026 · <b>Revisão:</b> 18/09/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399618" data-st="apr" data-tp="serv" data-resp="caio-silva" data-text="1399618-contratacao-de-empresa-especializada-em-confeccao-e-instalacao-de-gradil-metalico-de-divisa-descricao-gradil-metalico-tubular-d-100mm-mat-m-o-24m2-caio-silva-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399618</td>
+<td>Contratação de empresa especializada em confecção e instalação de gradil metálico de divisa.
+descrição: gradil metálico tubular D=100MM - MAT + M.O.
+24m²</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: Confirmar o gradil utilizado e anexar análise orçamentária no QC…</td></tr>
+<tr class="drow hide" data-for="1399618"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li>Confirmar o gradil utilizado e anexar análise orçamentária no QC</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>SC com os códigos novos.</li><li>Escopo detalhado do serviço anexado.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mno">X</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mno">X</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mno">X</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mno">X</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Caio Silva · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 27/08/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 27/08/2026 · <b>Analisada:</b> 28/08/2026 · <b>Revisão:</b> 21/09/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399623" data-st="apr" data-tp="serv" data-resp="mardison-pimenta" data-text="1399623-sc-para-elaboracao-de-contrato-de-fornecimento-de-energia-pagamento-conta-de-luz-mensal-da-obra-mardison-pimenta-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399623</td>
+<td>SC para elaboração de contrato de fornecimento de energia
+pagamento conta de luz mensal da obra</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — AJUSTADA</td></tr>
+<tr class="drow hide" data-for="1399623"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada.</div><h3 class="mt">Observação</h3><p>AJUSTADA</p><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mno">X</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mno">X</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mno">X</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Mardison Pimenta · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 27/08/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 27/08/2026 · <b>Analisada:</b> 28/08/2026 · <b>Revisão:</b> 31/08/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399625" data-st="apr" data-tp="serv" data-resp="mardison-pimenta" data-text="1399625-sc-para-elaboracao-de-contrato-para-fornecimento-de-agua-pagamento-conta-de-consumo-mensal-de-agua-mardison-pimenta-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399625</td>
+<td>SC para elaboração de contrato para fornecimento de água
+pagamento conta de consumo mensal de água.</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — AJUSTADA</td></tr>
+<tr class="drow hide" data-for="1399625"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada.</div><h3 class="mt">Observação</h3><p>AJUSTADA</p><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mno">X</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mno">X</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mno">X</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Mardison Pimenta · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 27/08/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 27/08/2026 · <b>Analisada:</b> 28/08/2026 · <b>Revisão:</b> 31/08/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399627" data-st="apr" data-tp="mat" data-resp="mardison-pimenta" data-text="1399627-sc-para-elaboracao-de-compra-de-2-geleiras-2-bebedouros-para-obra-cap-100-mardison-pimenta-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399627</td>
+<td>SC para elaboração de compra DE;
+2 GELEIRAS
+2 bebedouros
+para obra CAP-100.</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: Lançar o bebedouro e a máquina de gelo em 01.007.002.003 - Móveis e utensílios p/ canteiro…</td></tr>
+<tr class="drow hide" data-for="1399627"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li><b>(4)</b> Lançar o bebedouro e a máquina de gelo em 01.007.002.003 - Móveis e utensílios p/ canteiro</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mno">X</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Mardison Pimenta · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 27/08/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 27/08/2026 · <b>Analisada:</b> 28/08/2026 · <b>Revisão:</b> 03/09/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399663" data-st="apr" data-tp="mat" data-resp="alan-lira" data-text="1399663-sc-para-contratacao-de-empresa-para-fornecimento-de-mao-de-obra-e-material-para-rede-de-gas-do-empreendimento-implatancao-torre-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399663</td>
+<td>SC para contratação de empresa para fornecimento de mão de obra e material para rede de gás do empreendimento
+
+- implatanção
+- torre</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1399663"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div></div>
+<div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 27/08/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 02/09/2026 · <b>Analisada:</b> 03/09/2026 · <b>Revisão:</b> 04/09/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399750" data-st="apr" data-tp="serv" data-resp="mardison-pimenta" data-text="1399750-solicito-aditivo-r-3-200-00-para-o-contrato-cts-24678-para-pagamento-de-locacao-2-banheiros-quimicos-totalizando-r-3-200-00-mardison-pimenta-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399750</td>
+<td>Solicito aditivo r$ 3.200,00 para o contrato CTS/24678 para pagamento de locação 2 banheiros químicos
+ 
+
+
+totalizando = r$ 3.200,00</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1399750"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Mardison Pimenta · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 31/08/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 02/09/2026 · <b>Analisada:</b> 03/09/2026 · <b>Revisão:</b> 10/09/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399744" data-st="apr" data-tp="serv" data-resp="caio-silva" data-text="1399744-sc-para-contratacao-de-empresa-especializada-em-execucao-de-lajao-e-protensao-de-radier-incluso-materiais-concreto-aco-forma-gabarito-protensao-caio-silva-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399744</td>
+<td>SC para contratação de empresa especializada em execução de lajão e protensão de radier - incluso materiais (concreto/aço/forma/gabarito/protensão)</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: Quantidade da mão de obra de protensão divergente do levantamento: sc 10.602 kg e levantamento 10.790 kg. Confirmar a qu…</td></tr>
+<tr class="drow hide" data-for="1399744"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li><b>(3)</b> Quantidade da mão de obra de protensão divergente do levantamento: sc 10.602 kg e levantamento 10.790 kg. Confirmar a quantidade da mão de obra de execução do radier: a sc traz 434 m³ e o levantamento de concreto 946 m³</li><li><b>(7)</b> Preencher a análise orçamentária do QC da protensão e lançar o comprometido conforme custo por nível atualizado</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>SC com os códigos novos.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Escopo detalhado do serviço anexado.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mno">X</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mno">X</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Caio Silva · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 31/08/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 08/09/2026 · <b>Analisada:</b> 08/09/2026 · <b>Revisão:</b> 10/09/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399773" data-st="apr" data-tp="serv" data-resp="mardison-pimenta" data-text="1399773-sc-para-contratacao-de-licenca-de-software-consult-geo-para-gerenciamento-de-obra-mardison-pimenta-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399773</td>
+<td>SC para contratação de licença de software - consult GEO para gerenciamento de obra</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1399773"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Mardison Pimenta · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 01/09/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 08/09/2026 · <b>Analisada:</b> 08/09/2026 · <b>Revisão:</b> —<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399776" data-st="apr" data-tp="serv" data-resp="mardison-pimenta" data-text="1399776-sc-para-contratacao-de-licenca-de-software-construpoint-para-gerenciamento-de-obra-mardison-pimenta-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399776</td>
+<td>SC para contratação de licença de software - construpoint para gerenciamento de obra</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1399776"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Mardison Pimenta · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 01/09/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 08/09/2026 · <b>Analisada:</b> 08/09/2026 · <b>Revisão:</b> 10/09/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399801" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1399801-sc-para-aquisicao-de-material-e-contratacao-de-mao-de-obra-para-execucao-de-escada-hidraulica-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399801</td>
+<td>SC para aquisição de material e contratação de mão de obra para execução de escada hidráulica</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — Entrega do material em 20/10/2026 e execução do serviço conforme a liberação da licença ambiental, prevista para 10/12/2026</td></tr>
+<tr class="drow hide" data-for="1399801"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada.</div><h3 class="mt">Observação</h3><p>Entrega do material em 20/10/2026 e execução do serviço conforme a liberação da licença ambiental, prevista para 10/12/2026</p><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80800 · <b>Cadastro:</b> 01/09/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 24/09/2026 · <b>Analisada:</b> 25/09/2026 · <b>Revisão:</b> 28/09/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399844" data-st="apr" data-tp="mat" data-resp="alan-lira" data-text="1399844-referente-a-tampas-de-acabamento-quadros-de-distribuicao-g2-de-36-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399844</td>
+<td>Referente a tampas de acabamento quadros de distribuição G2 de 36</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — SC JUSTIFICADA</td></tr>
+<tr class="drow hide" data-for="1399844"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Situação</h3><div class="anabox">SC JUSTIFICADA</div></div>
+<div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 02/09/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 08/09/2026 · <b>Analisada:</b> 08/09/2026 · <b>Revisão:</b> 11/09/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399967" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1399967-sc-para-contratacao-de-empresa-para-execucao-de-gabarito-de-madeira-da-obra-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399967</td>
+<td>SC para contratação de empresa para execução de gabarito de madeira da obra</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: Cronograma ausente; Atualizar a data de necessidade, que está vencida…</td></tr>
+<tr class="drow hide" data-for="1399967"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li><b>(9)</b> Cronograma ausente</li><li><b>(11)</b> Atualizar a data de necessidade, que está vencida</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mno">X</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mno">X</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 08/09/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 09/09/2026 · <b>Analisada:</b> 10/09/2026 · <b>Revisão:</b> 21/09/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399964" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1399964-sc-para-contratacao-de-empresa-para-confeccao-de-estrutura-provisoria-de-caixa-d-agua-para-abastecimento-do-canteiro-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399964</td>
+<td>SC para contratação de empresa para confecção de estrutura provisória de caixa d&#x27;água para abastecimento do canteiro</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: Escopo detalhado ausente; QC ausente…</td></tr>
+<tr class="drow hide" data-for="1399964"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li><b>(6)</b> Escopo detalhado ausente</li><li><b>(7/8)</b> QC ausente</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mno">X</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mno">X</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mno">X</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 08/09/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 17/09/2026 · <b>Analisada:</b> 17/09/2026 · <b>Revisão:</b> 21/09/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399965" data-st="apr" data-tp="mat" data-resp="alan-lira" data-text="1399965-sc-para-aquisicao-de-material-de-expediente-para-atividades-administrativas-e-materiais-de-limpeza-para-manutencao-do-canteir-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399965</td>
+<td>SC para aquisição de material de expediente para atividades administrativas e materiais de limpeza para manutenção do canteir</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1399965"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 08/09/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 17/09/2026 · <b>Analisada:</b> 17/09/2026 · <b>Revisão:</b> —<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1399966" data-st="apr" data-tp="mat" data-resp="alan-lira" data-text="1399966-sc-para-aquisicao-de-materiais-para-seguranca-dos-colaboradores-de-forma-coletiva-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1399966</td>
+<td>SC para aquisição de materiais para segurança dos colaboradores de forma coletiva</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — Compra na praça, SLA não se aplica</td></tr>
+<tr class="drow hide" data-for="1399966"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada.</div><h3 class="mt">Observação</h3><p>Compra na praça, SLA não se aplica</p><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mna">N/A</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 08/09/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 17/09/2026 · <b>Analisada:</b> 17/09/2026 · <b>Revisão:</b> —<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1400131" data-st="apr" data-tp="mat" data-resp="alan-lira" data-text="1400131-sc-para-aquisicao-de-ferramentas-para-atividades-da-obra-e-servicos-no-canteiro-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1400131</td>
+<td>SC para aquisição de ferramentas para atividades da obra e serviços no canteiro</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1400131"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mna">N/A</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 13/09/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 17/09/2026 · <b>Analisada:</b> 17/09/2026 · <b>Revisão:</b> —<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1400132" data-st="apr" data-tp="mat" data-resp="alan-lira" data-text="1400132-sc-para-aquisicao-de-equipamentos-para-uso-em-servicos-da-obra-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1400132</td>
+<td>SC para aquisição de equipamentos para uso em serviços da obra</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — o macaco hidráulico tipo garrafa 20 t será pedido em outra sc. ok</td></tr>
+<tr class="drow hide" data-for="1400132"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada.</div><h3 class="mt">Observação</h3><p>o macaco hidráulico tipo garrafa 20 t será pedido em outra sc. ok</p><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mna">N/A</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 13/09/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 17/09/2026 · <b>Analisada:</b> 17/09/2026 · <b>Revisão:</b> 21/09/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1400130" data-st="apr" data-tp="mat" data-resp="alan-lira" data-text="1400130-sc-para-aquisicao-de-material-para-estrutura-monolitica-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1400130</td>
+<td>SC para aquisição de material para estrutura monolítica</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: Cronograma anexado é o da implantação do SAAF. Anexar o da estrutura monolítica…</td></tr>
+<tr class="drow hide" data-for="1400130"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li><b>(5)</b> Cronograma anexado é o da implantação do SAAF. Anexar o da estrutura monolítica</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mno">X</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 13/09/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 17/09/2026 · <b>Analisada:</b> 17/09/2026 · <b>Revisão:</b> 21/09/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1400188" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1400188-sc-para-contratacao-de-empresa-para-retirada-de-entulhos-caixa-coletora-de-5m3-considerada-a-quantidade-orcada-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1400188</td>
+<td>SC para contratação de empresa para retirada de entulhos - caixa coletora de 5M³ - considerada a quantidade orçada</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: ok…</td></tr>
+<tr class="drow hide" data-for="1400188"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li>ok</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>SC com os códigos novos.</li><li>Apropriação correta para a natureza do insumo.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mno">X</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mno">X</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mno">X</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mno">X</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 14/09/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 17/09/2026 · <b>Analisada:</b> 17/09/2026 · <b>Revisão:</b> 21/09/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1400189" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1400189-sc-para-contratacao-de-empresa-de-limpeza-de-fossa-do-canteiro-considerando-1-limpeza-a-cada-2-meses-em-1-ano-total-de-limpezas-12-2-6-limpezas-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1400189</td>
+<td>SC para contratação de empresa de limpeza de fossa do canteiro - considerando 1 limpeza a cada 2 meses em 1 ano - total de limpezas = 12/2 = 6 limpezas</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: ok…</td></tr>
+<tr class="drow hide" data-for="1400189"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li>ok</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mno">X</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mno">X</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mno">X</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 14/09/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 17/09/2026 · <b>Analisada:</b> 17/09/2026 · <b>Revisão:</b> 21/09/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1400190" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1400190-sc-para-contratacao-de-empresa-de-caminhao-pipa-para-abastecimento-do-canteiro-de-forma-provisoria-ate-a-execucao-do-abastecimento-de-agua-por-parte-da-concessionaria-1-pipa-a-cada-2-dias-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1400190</td>
+<td>SC para contratação de empresa de caminhão pipa para abastecimento do canteiro de forma provisória até a execução do abastecimento de água por parte da concessionária - 1 pipa a cada 2 dias</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: ok…</td></tr>
+<tr class="drow hide" data-for="1400190"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li>ok</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mno">X</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mno">X</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mno">X</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 14/09/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 17/09/2026 · <b>Analisada:</b> 17/09/2026 · <b>Revisão:</b> 21/09/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1400340" data-st="apr" data-tp="mat" data-resp="alan-lira" data-text="1400340-sc-para-aquisicao-de-material-de-rede-de-incendio-do-empreendimento-material-de-tubulacao-de-rede-ate-a-entrada-das-torres-luva-de-transicao-da-casa-de-bombas-e-entrada-do-edificio-garage-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1400340</td>
+<td>SC para aquisição de material de rede de incêndio do empreendimento - material de tubulação de rede até a entrada das torres, luva de transição da casa de bombas e entrada do edifício garage</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1400340"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 20/09/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 21/09/2026 · <b>Analisada:</b> 21/09/2026 · <b>Revisão:</b> 22/09/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1400341" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1400341-sc-para-contratacao-de-empresa-para-execucao-de-rede-de-incendio-esgoto-e-agua-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1400341</td>
+<td>SC para contratação de empresa para execução de rede de incêndio, esgoto e água</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1400341"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 20/09/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 21/09/2026 · <b>Analisada:</b> 21/09/2026 · <b>Revisão:</b> 29/09/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1400342" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1400342-sc-para-contratacao-de-empresa-para-servico-de-infra-eletrica-sistema-e-aterramento-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1400342</td>
+<td>SC para contratação de empresa para serviço de infra elétrica, sistema e aterramento</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1400342"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 20/09/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 21/09/2026 · <b>Analisada:</b> 21/09/2026 · <b>Revisão:</b> 29/09/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1400385" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1400385-sc-para-contratacao-de-empresa-para-controle-tecnologico-de-concreto-da-obra-radier-edificio-garagem-torre-anexos-cts-ja-aprovado-porem-sc-foi-feita-para-ajuste-de-saldo-e-troca-d-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1400385</td>
+<td>SC para contratação de empresa para controle tecnológico de concreto da obra - radier - edifício garagem - torre - anexos. CTS já aprovado, porém, SC foi feita para ajuste de saldo e troca d</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1400385"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 22/09/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 24/09/2026 · <b>Analisada:</b> 24/09/2026 · <b>Revisão:</b> 24/09/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1400417" data-st="apr" data-tp="mat" data-resp="alan-lira" data-text="1400417-sc-para-aquisicao-de-material-complementar-para-muro-de-divisa-meio-bloco-de-14x19x39-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1400417</td>
+<td>SC para aquisição de material complementar para muro de divisa - meio bloco de 14X19X39</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — Aguardando retorno do Orçamento</td></tr>
+<tr class="drow hide" data-for="1400417"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada.</div><h3 class="mt">Observação</h3><p>Aguardando retorno do Orçamento</p><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Cronograma anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 23/09/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 25/09/2026 · <b>Analisada:</b> 25/09/2026 · <b>Revisão:</b> 29/09/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1400424" data-st="apr" data-tp="mat" data-resp="alan-lira" data-text="1400424-sc-para-aquisicao-de-material-para-execucao-de-calcada-externa-contemplando-calcada-e-vaga-de-estacionamento-em-frente-ao-edificio-garagem-periodo-do-servico-01-11-2026-a-19-11-2026-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1400424</td>
+<td>SC para aquisição de material para execução de calçada externa - contemplando calçada e vaga de estacionamento em frente ao edifício garagem - período do serviço = 01/11/2026 a 19/11/2026</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1400424"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80800 · <b>Cadastro:</b> 23/09/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 08/10/2026 · <b>Analisada:</b> 09/10/2026 · <b>Revisão:</b> 22/10/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1400425" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1400425-sc-para-contratacao-de-empresa-para-servico-de-calcada-externa-e-vaga-de-estacionamento-calcada-396-75-m2-vaga-de-garagem-117m2-meio-fio-132m-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1400425</td>
+<td>SC para contratação de empresa para serviço de calçada externa e vaga de estacionamento - calçada = 396,75 m² - vaga de garagem = 117M² - meio fio = 132M</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1400425"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80800 · <b>Cadastro:</b> 23/09/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 08/10/2026 · <b>Analisada:</b> 09/10/2026 · <b>Revisão:</b> 22/10/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1400587" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1400587-sc-para-contratacao-de-reparo-de-conteiner-guarita-da-empresa-jumar-super-g-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1400587</td>
+<td>SC para contratação de reparo de conteiner guarita da empresa jumar/super g</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: Alterar a descrição da SC para informar que se trata de reparo do container guarita (Jumar/Super G) danificado em furto …</td></tr>
+<tr class="drow hide" data-for="1400587"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li><b>(2)</b> Alterar a descrição da SC para informar que se trata de reparo do container guarita (Jumar/Super G) danificado em furto na obra e encaminhado pela locadora para manutenção, vinculado à medição de avaria anexa</li><li><b>(5)</b> Se possível, anexar as fotos do estado do container após o furto, de forma que seja possível ligar cada item cobrado (caixa de disjuntor, lâmpadas, plug de energia, tomadas e canaleta) ao que foi levado ou danificado. Informar se a higienização (R$ 255,00) decorre do furto ou se é limpeza normal de devolução. Se for de devolução, confirmar se já está incluída no valor da locação e, nesse caso, retirar o item da SC</li><li><b>(9)</b> Anexar cronograma ausente</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>SC com os códigos novos.</li><li>Apropriação correta para a natureza do insumo.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mno">X</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mno">X</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mno">X</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mna">N/A</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mna">N/A</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mno">X</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 29/09/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 05/10/2026 · <b>Analisada:</b> 05/10/2026 · <b>Revisão:</b> 06/10/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1400651" data-st="apr" data-tp="mat" data-resp="alan-lira" data-text="1400651-sc-para-aquisicao-de-material-complementar-para-rede-de-drenagem-material-pendente-para-inicio-do-servico-manilhas-tubos-e-conexoes-aneis-de-borracha-requadro-metalico-tampas-de-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1400651</td>
+<td>SC para aquisição de material complementar para rede de drenagem
+
+material pendente para início do serviço:
+
+- manilhas
+- tubos e conexões
+- aneis de borracha
+- requadro metálico
+- tampas de</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: SC em conferência e validação pelo GI (Gestão de Instalações)…</td></tr>
+<tr class="drow hide" data-for="1400651"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li>SC em conferência e validação pelo GI (Gestão de Instalações)</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mno">X</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 30/09/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 05/10/2026 · <b>Analisada:</b> 05/10/2026 · <b>Revisão:</b> 06/10/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1400709" data-st="apr" data-tp="mat" data-resp="alan-lira" data-text="1400709-sc-para-aquisicao-de-material-para-infra-eletrica-dados-sistemas-e-alarme-da-implantacao-infra-de-iluminacao-infra-de-rede-media-tensao-infra-de-alimentacao-e-distribuicao-lazer-e-gu-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1400709</td>
+<td>SC para aquisição de material para infra elétrica, dados, sistemas e alarme da implantação
+- infra de iluminação
+- infra de rede média tensão
+- infra de alimentação e distribuição lazer e gu</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — Obs: SC em conferência e validação pelo GI (Gestão de Instalações).
+
+A justificativa da obra é que, apesar de o serviço estar previsto para …</td></tr>
+<tr class="drow hide" data-for="1400709"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Situação</h3><div class="anabox">Obs: SC em conferência e validação pelo GI (Gestão de Instalações).
+
+A justificativa da obra é que, apesar de o serviço estar previsto para iniciar em fevereiro, o material precisa estar disponível antecipadamente para viabilizar o início do 360 de elétrica, que não está contemplado no cronograma. Como essa etapa é executada em conjunto com a rede de dados, alarme e demais instalações relacionadas, a obra precisa do material antes para conseguir iniciar essas atividades de forma integrada</div></div>
+<div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 02/10/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 05/10/2026 · <b>Analisada:</b> 05/10/2026 · <b>Revisão:</b> 06/10/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1400711" data-st="apr" data-tp="mat" data-resp="alan-lira" data-text="1400711-sc-para-aquisicao-de-material-para-rede-sistema-dados-alarme-de-incendio-infra-seca-dados-sistema-alarme-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1400711</td>
+<td>SC para aquisição de material para rede sistema/dados/alarme de incêndio
+
+- infra seca dados/sistema/alarme</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — Obs: SC em conferência e validação pelo GI (Gestão de Instalações).
+
+A justificativa da obra é que, apesar de o serviço estar previsto para …</td></tr>
+<tr class="drow hide" data-for="1400711"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Situação</h3><div class="anabox">Obs: SC em conferência e validação pelo GI (Gestão de Instalações).
+
+A justificativa da obra é que, apesar de o serviço estar previsto para iniciar em fevereiro, o material precisa estar disponível antecipadamente para viabilizar o início do 360 de elétrica, que não está contemplado no cronograma. Como essa etapa é executada em conjunto com a rede de dados, alarme e demais instalações relacionadas, a obra precisa do material antes para conseguir iniciar essas atividades de forma integrada</div></div>
+<div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 02/10/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 05/10/2026 · <b>Analisada:</b> 05/10/2026 · <b>Revisão:</b> 07/10/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1400732" data-st="apr" data-tp="mat" data-resp="alan-lira" data-text="1400732-sc-para-aquisicao-de-material-de-spda-para-radier-aterramento-de-torre-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1400732</td>
+<td>SC para aquisição de material de SPDA para radier
+- aterramento de torre</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: SC em conferência e validação pelo GI (Gestão de Instalações)…</td></tr>
+<tr class="drow hide" data-for="1400732"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li>SC em conferência e validação pelo GI (Gestão de Instalações)</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mno">X</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 02/10/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 05/10/2026 · <b>Analisada:</b> 06/10/2026 · <b>Revisão:</b> 07/10/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1400733" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1400733-sc-para-solicitacao-de-carro-pipa-para-abastecimento-da-obra-descricao-referente-novembro-e-dezembro-20m3-litros-para-reaterro-da-caixa-de-retardo-02-carros-190m3-para-abasteciment-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1400733</td>
+<td>SC para solicitação de carro pipa para abastecimento da obra
+
+descrição: referente novembro e dezembro 
+
+- 20M3 litros para reaterro da caixa de retardo (02 carros)
+- 190M3 para abasteciment</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: Incluir na análise orçamentária do QC a apropriação 05.001.003.001, onde estão 2 das 21 unidades. Insumo em confirmação …</td></tr>
+<tr class="drow hide" data-for="1400733"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li><b>(7)</b> Incluir na análise orçamentária do QC a apropriação 05.001.003.001, onde estão 2 das 21 unidades. Insumo em confirmação com o Suprimentos</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Escopo detalhado do serviço anexado.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mno">X</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 02/10/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 05/10/2026 · <b>Analisada:</b> 06/10/2026 · <b>Revisão:</b> 07/10/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1400763" data-st="apr" data-tp="mat" data-resp="alan-lira" data-text="1400763-sc-para-aquisicao-de-barras-retas-de-8mm-e-16mm-complementar-para-armacao-negativa-de-laje-da-caixa-de-retencao-mudanca-devido-a-atualizacao-de-projeto-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1400763</td>
+<td>SC para aquisição de barras retas de 8MM e 16MM complementar para armação negativa de laje da caixa de retenção
+mudança devido à atualização de projeto</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada com pendências de retorno: ok…</td></tr>
+<tr class="drow hide" data-for="1400763"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li>ok</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mno">X</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mno">X</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 02/10/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 05/10/2026 · <b>Analisada:</b> 06/10/2026 · <b>Revisão:</b> —<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1400762" data-st="apr" data-tp="serv" data-resp="nisvaldo-graca" data-text="1400762-referente-a-contratacao-de-caminhao-munk-quantitativo-de-diarias-10-diarias-para-realizar-movimentacao-de-materias-interno-nisvaldo-graca-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1400762</td>
+<td>Referente a contratação de caminhão munk
+quantitativo de diarias = 10 diarias 
+para realizar movimentação de materias interno</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — As 14 diárias consomem todo o previsto no histograma da Fase 1, não haverá previsão para novas solicitações de munck nesta fase</td></tr>
+<tr class="drow hide" data-for="1400762"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada.</div><h3 class="mt">Observação</h3><p>As 14 diárias consomem todo o previsto no histograma da Fase 1, não haverá previsão para novas solicitações de munck nesta fase</p><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Cronograma anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Nisvaldo Graca · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 05/10/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 16/10/2026 · <b>Analisada:</b> 16/10/2026 · <b>Revisão:</b> 19/10/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1400877" data-st="apr" data-tp="mat" data-resp="alan-lira" data-text="1400877-sc-para-aquisicao-de-cordoalha-para-protensao-do-edificio-garagem-referente-ao-complemento-da-laje-g2-referente-a-laje-g3-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1400877</td>
+<td>SC para aquisição de cordoalha para protensão do edifício garagem - referente ao complemento da laje G2 - referente à laje G3</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1400877"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 08/10/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 16/10/2026 · <b>Analisada:</b> 16/10/2026 · <b>Revisão:</b> 16/10/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1401063" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1401063-sc-para-contratacao-de-empresa-para-fornecimento-e-instalacao-de-grama-para-protecao-de-talude-previsao-de-execucao-23-11-2026-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1401063</td>
+<td>SC para contratação de empresa para fornecimento e instalação de grama para proteção de talude - previsão de execução 23/11/2026</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1401063"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 15/10/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 20/10/2026 · <b>Analisada:</b> 16/10/2026 · <b>Revisão:</b> —<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1401079" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1401079-sc-para-locacao-de-2-conteiners-de-3m-para-deposito-de-materiais-na-obra-1-conteiner-para-guardar-material-de-instacao-conexoes-valvulas-aneis-e-etc-1-conteiner-para-guardar-materia-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1401079</td>
+<td>SC para locação de 2 conteiners de 3M para depósito de materiais na obra
+
+- 1 conteiner para guardar material de instação (conexões, válvulas, aneis e etc)
+- 1 conteiner para guardar materia</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1401079"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 11 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">6. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">10. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 15/10/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 16/10/2026 · <b>Analisada:</b> 16/10/2026 · <b>Revisão:</b> 19/10/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1401101" data-st="apr" data-tp="mat" data-resp="alan-lira" data-text="1401101-sc-para-aquisicao-de-aco-complementar-de-vigas-e-bloco-de-radier-vigas-para-parede-do-elevador-do-radier-nao-solicitadas-anteriormente-aguardando-revisao-de-projeto-bloco-95-revisado-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1401101</td>
+<td>SC para aquisição de aço complementar de vigas e bloco de radier - vigas para parede do elevador do radier - não solicitadas anteriormente aguardando revisão de projeto - bloco 95 - revisado</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1401101"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 8 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 16/10/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 16/10/2026 · <b>Analisada:</b> 19/10/2026 · <b>Revisão:</b> 19/10/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1401110" data-st="pend" data-tp="mat" data-resp="alan-lira" data-text="1401110-sc-para-aquisicao-de-material-instalacoes-de-estrutura-monolitica-alan-lira-ajustar" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1401110</td>
+<td>SC para aquisição de material instalações de estrutura monolítica</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st pend">AJUSTAR</span></td><td class="det">SC em conferência pelo GI (Gestão de Instaladora)</td></tr>
+<tr class="drow hide" data-for="1401110"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li>SC em conferência pelo GI (Gestão de Instaladora)</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Custo disponível na linha do orçamento.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 9 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Custo disponível</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 18/10/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 26/10/2026 · <b>Analisada:</b> 19/10/2026 · <b>Revisão:</b> 26/10/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1401136" data-st="apr" data-tp="serv" data-resp="alan-lira" data-text="1401136-sc-para-contratacao-de-mao-de-obra-para-execucao-de-vaga-de-estacionamento-da-area-externa-da-obra-9-vagas-alan-lira-aprovada" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1401136</td>
+<td>SC para contratação de mão de obra para execução de vaga de estacionamento da área externa da obra - 9 vagas</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st apr">APROVADA</span></td><td class="det">Aprovada — checklist conforme.</td></tr>
+<tr class="drow hide" data-for="1401136"><td colspan="6"><div class="detail"><div class="grid2">
+<div><div class="aprbox">✔ SC aprovada — sem ajustes.</div><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>Escopo detalhado e QC compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Custo disponível na linha do orçamento.</li><li>Cronograma anexado.</li><li>Projeto de referência anexado.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 12 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Custo disponível</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Escopo detalhado</td><td class="mc mok">✔</td></tr><tr><td class="itn">8. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">10. Cronograma anexado</td><td class="mc mok">✔</td></tr><tr><td class="itn">11. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">12. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 19/10/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 26/10/2026 · <b>Analisada:</b> 20/10/2026 · <b>Revisão:</b> 26/10/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1401132" data-st="pend" data-tp="mat" data-resp="alan-lira" data-text="1401132-sc-para-aquisicao-de-1-caixa-d-agua-de-5-mil-litros-necessidade-para-abastecimento-de-geleira-e-bebedouro-de-forma-provisoria-da-obra-data-de-necessidade-ate-20-11-2026-alan-lira-ajustar" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1401132</td>
+<td>SC para aquisição de 1 caixa d&#x27;água de 5 mil litros - necessidade para abastecimento de geleira e bebedouro de forma provisória da obra - data de necessidade até 20/11/2026</td><td class="ctr"><span class="tag mat">Material</span></td>
+<td class="ctr"><span class="st pend">AJUSTAR</span></td><td class="det">SC em conferência pelo GI (Gestão de Instaladora); Confirmar a data de necessidade: SC 23/11 e observação até 20/11</td></tr>
+<tr class="drow hide" data-for="1401132"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li>SC em conferência pelo GI (Gestão de Instaladora)</li><li><b>(9)</b> Confirmar a data de necessidade: SC 23/11 e observação até 20/11</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>Custo disponível na linha do orçamento.</li></ul></div>
+<div><h3>Matriz dos 9 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Custo disponível</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">7. Levantamento</td><td class="mc mna">N/A</td></tr><tr><td class="itn">8. Projeto (quando necessário)</td><td class="mc mna">N/A</td></tr><tr><td class="itn">9. Prazo de SLA</td><td class="mc mno">X</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 19/10/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 26/10/2026 · <b>Analisada:</b> 22/10/2026 · <b>Revisão:</b> 26/10/2026<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1401198" data-st="pend" data-tp="serv" data-resp="ecivan-lima" data-text="1401198-sc-para-retirada-de-bota-fora-da-drenagem-completa-da-obra-fase-1-e-2-ecivan-lima-ajustar" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1401198</td>
+<td>SC para retirada de bota fora da drenagem completa da obra( fase 1 e 2)</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st pend">AJUSTAR</span></td><td class="det">Apropriação do serviço de bota fora da drenagem em confirmação com o Orçamento; Anexar o escopo do serviço de retirada de bota fora; Entrega 21/11 e S…</td></tr>
+<tr class="drow hide" data-for="1401198"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li><b>(4)</b> Apropriação do serviço de bota fora da drenagem em confirmação com o Orçamento</li><li><b>(7)</b> Anexar o escopo do serviço de retirada de bota fora</li><li><b>(12)</b> Entrega 21/11 e SLA de 60 dias</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Levantamento anexado e compatível com o solicitado.</li><li>QC com a apropriação e os valores compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Custo disponível na linha do orçamento.</li><li>Projeto de referência anexado.</li></ul></div>
+<div><h3>Matriz dos 12 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mno">X</td></tr><tr><td class="itn">5. Custo disponível</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mok">✔</td></tr><tr><td class="itn">7. Escopo detalhado</td><td class="mc mno">X</td></tr><tr><td class="itn">8. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">10. Cronograma anexado</td><td class="mc mna">N/A</td></tr><tr><td class="itn">11. Projeto (quando necessário)</td><td class="mc mok">✔</td></tr><tr><td class="itn">12. Prazo de SLA</td><td class="mc mno">X</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Ecivan Lima · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 21/10/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> — · <b>Analisada:</b> 22/10/2026 · <b>Revisão:</b> —<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr><tr class="rowsc" data-sc="1401211" data-st="pend" data-tp="serv" data-resp="alan-lira" data-text="1401211-sc-para-contratacao-de-mao-de-obra-para-radier-da-torre-1-alan-lira-ajustar" onclick="toggle(this)">
+<td class="exp">+</td><td class="sc">1401211</td>
+<td>SC para contratação de mão de obra para radier da torre 1</td><td class="ctr"><span class="tag serv">Serviço</span></td>
+<td class="ctr"><span class="st pend">AJUSTAR</span></td><td class="det">Anexar o levantamento dos 434 m3 de radier; Anexar o escopo do serviço; a proposta anexada é da obra Horizonte Ponta Negra; Confirmar se o QC se refer…</td></tr>
+<tr class="drow hide" data-for="1401211"><td colspan="6"><div class="detail"><div class="grid2">
+<div><h3>Pendências de retorno</h3><ol class="aj"><li><b>(6)</b> Anexar o levantamento dos 434 m3 de radier</li><li><b>(7)</b> Anexar o escopo do serviço; a proposta anexada é da obra Horizonte Ponta Negra</li><li><b>(8)</b> Confirmar se o QC se refere ao contrato CTS/26499 da GT Santos, de R$ 112.840,00, já lançado na linha</li><li><b>(10)</b> Cronograma ausente</li><li><b>(11)</b> Anexar o projeto de fundação da Torre 1</li></ol><h3 class="mt">Já está ok</h3><ul class="good"><li>Códigos novos, descrição e quantidade conferem com o orçamento.</li><li>Apropriação correta para a natureza do insumo.</li><li>QC com a apropriação e os valores compatíveis com o custo por nível.</li><li>Quantidade do QC bate com o solicitado no SIENGE.</li><li>Custo disponível na linha do orçamento.</li><li>Prazo de necessidade compatível com o SLA do grupo.</li></ul></div>
+<div><h3>Matriz dos 12 itens</h3><div class="mtx"><table><tbody><tr><td class="itn">1. SC c/ códigos novos</td><td class="mc mok">✔</td></tr><tr><td class="itn">2. Descrição dos insumos</td><td class="mc mok">✔</td></tr><tr><td class="itn">3. Qtd e unidade</td><td class="mc mok">✔</td></tr><tr><td class="itn">4. Apropriações corretas</td><td class="mc mok">✔</td></tr><tr><td class="itn">5. Custo disponível</td><td class="mc mok">✔</td></tr><tr><td class="itn">6. Levantamento</td><td class="mc mno">X</td></tr><tr><td class="itn">7. Escopo detalhado</td><td class="mc mno">X</td></tr><tr><td class="itn">8. QC × custo por nível</td><td class="mc mok">✔</td></tr><tr><td class="itn">9. Qtd do QC × SIENGE</td><td class="mc mok">✔</td></tr><tr><td class="itn">10. Cronograma anexado</td><td class="mc mno">X</td></tr><tr><td class="itn">11. Projeto (quando necessário)</td><td class="mc mno">X</td></tr><tr><td class="itn">12. Prazo de SLA</td><td class="mc mok">✔</td></tr></tbody></table></div>
+<div class="meta"><b>Responsável:</b> Alan Lira · <b>Centro de custo:</b> 80807 · <b>Cadastro:</b> 22/10/2026<br>
+<b>Autorização (2ª→3ª alçada):</b> 26/10/2026 · <b>Analisada:</b> 26/10/2026 · <b>Revisão:</b> —<br>
+<b>SIENGE:</b> —</div></div>
+</div></div></td></tr>
+</tbody></table>
+<div id="nodata" class="nodata hide">Nenhuma SC para os filtros selecionados.</div></div>
+</div>
+
+<div id="tab-cu" class="hide">
+<div class="toolbar"><span class="count">Custo por Nível (SIENGE) · snapshot 26/10/2026 · verba = orçado − comprometido</span></div>
+<div class="ckpis">
+<div class="ckpi orc"><div class="cl">Orçado (obra)</div><div class="cn">R$ 65.246.705,09</div></div>
+<div class="ckpi com"><div class="cl">Comprometido</div><div class="cn">R$ 12.218.491,12</div></div>
+<div class="ckpi vb"><div class="cl">Verba disponível</div><div class="cn">R$ 53.028.213,97</div></div>
+</div>
+<div class="card"><h2>Unidade construtiva</h2>
+<table><thead><tr><th>Unidade construtiva</th><th class="num">Orçado</th><th class="num">Comprometido</th><th class="num">Verba disp.</th></tr></thead>
+<tbody><tr><td>ADMINISTRAÇÃO DA OBRA</td><td class="num">R$ 15.082.070,80</td><td class="num">R$ 1.481.671,19</td><td class="num vpos">R$ 13.600.399,61</td></tr><tr><td>INFRA E URBANIZAÇÃO</td><td class="num">R$ 11.522.427,13</td><td class="num">R$ 6.931.006,38</td><td class="num vpos">R$ 4.591.420,75</td></tr><tr><td>TORRES</td><td class="num">R$ 38.642.207,16</td><td class="num">R$ 3.805.813,55</td><td class="num vpos">R$ 34.836.393,61</td></tr></tbody></table></div>
+<div class="card"><h2>Principais grupos (por comprometido)</h2>
+<table><thead><tr><th>UC</th><th>Grupo</th><th class="num">Orçado</th><th class="num">Comprometido</th><th class="num">Verba disp.</th></tr></thead>
+<tbody><tr><td><span class="uctag">INFRA E URBANIZAÇÃO</span></td><td>05.011 · EDIFÍCIO GARAGEM</td><td class="num">R$ 5.089.545,32</td><td class="num">R$ 4.585.335,85</td><td class="num vpos">R$ 504.209,47</td></tr><tr><td><span class="uctag">TORRES</span></td><td>01.001 · FUNDAÇÃO</td><td class="num">R$ 4.264.547,21</td><td class="num">R$ 3.511.361,67</td><td class="num vpos">R$ 753.185,54</td></tr><tr><td><span class="uctag">INFRA E URBANIZAÇÃO</span></td><td>02.001 · TERRAPLANAGEM E CONTENÇÕES</td><td class="num">R$ 1.362.280,02</td><td class="num">R$ 964.477,84</td><td class="num vpos">R$ 397.802,18</td></tr><tr><td><span class="uctag">INFRA E URBANIZAÇÃO</span></td><td>06.001 · MURO DE DIVISA</td><td class="num">R$ 1.405.731,69</td><td class="num">R$ 463.357,34</td><td class="num vpos">R$ 942.374,35</td></tr><tr><td><span class="uctag">INFRA E URBANIZAÇÃO</span></td><td>04.002 · CAIXA DE RETENÇÃO</td><td class="num">R$ 462.080,43</td><td class="num">R$ 443.434,85</td><td class="num vpos">R$ 18.645,58</td></tr><tr><td><span class="uctag">INFRA E URBANIZAÇÃO</span></td><td>04.001 · RESERVATÓRIOS</td><td class="num">R$ 507.112,15</td><td class="num">R$ 400.639,17</td><td class="num vpos">R$ 106.472,98</td></tr><tr><td><span class="uctag">ADMINISTRAÇÃO DA OBRA</span></td><td>01.003 · DESPESAS MENSAIS/ LIMPEZA PERMANENTE DE OBRA</td><td class="num">R$ 784.148,00</td><td class="num">R$ 388.166,67</td><td class="num vpos">R$ 395.981,33</td></tr><tr><td><span class="uctag">ADMINISTRAÇÃO DA OBRA</span></td><td>01.001 · EQUIPE/ RECURSOS HUMANOS</td><td class="num">R$ 7.321.831,45</td><td class="num">R$ 387.127,96</td><td class="num vpos">R$ 6.934.703,49</td></tr></tbody></table></div>
+<div class="card"><h2>Linhas com verba negativa</h2>
+<table><thead><tr><th>UC</th><th>Item</th><th class="num">Orçado</th><th class="num">Comprometido</th><th class="num">Verba disp.</th></tr></thead>
+<tbody><tr><td><span class="uctag">INFRA E URBANIZAÇÃO</span></td><td>05.011.004.015 · SERVIÇO DE ESTRUTURA INCLUSO FORMA, DESFORMA, ARMAÇÃO E CONCRETO</td><td class="num">R$ 623.255,36</td><td class="num">R$ 1.991.699,11</td><td class="num vneg">-R$ 1.368.443,75</td></tr><tr><td><span class="uctag">INFRA E URBANIZAÇÃO</span></td><td>05.011.008.001 · PISO EM CONCRETO DESEMPENADO ARMADO - ESPESSURA 12CM</td><td class="num">R$ 5.519,47</td><td class="num">R$ 227.264,60</td><td class="num vneg">-R$ 221.745,13</td></tr><tr><td><span class="uctag">INFRA E URBANIZAÇÃO</span></td><td>05.011.004.014 · CONCRETO FCK 30 MPA SEIXO SLUMP 10+-2 - MAT.</td><td class="num">R$ 689.476,24</td><td class="num">R$ 788.060,00</td><td class="num vneg">-R$ 98.583,76</td></tr><tr><td><span class="uctag">INFRA E URBANIZAÇÃO</span></td><td>05.011.005.001 · ALVENARIA DE BLOCO DE CONCRETO DE VEDAÇÃO, MED.: 14 X 19 X 39CM, COM ARGAMASSA DE ASSENTAMENTO - MAT.</td><td class="num">R$ 47.674,67</td><td class="num">R$ 112.394,32</td><td class="num vneg">-R$ 64.719,65</td></tr><tr><td><span class="uctag">INFRA E URBANIZAÇÃO</span></td><td>05.011.005.002 · ALVENARIA DE CANALETA DE CONCRETO DE VEDAÇÃO, MED.: 14 X 19 X 39CM, COM ARGAMASSA DE ASSENTAMENTO - MAT.</td><td class="num">R$ 17.033,92</td><td class="num">R$ 58.993,78</td><td class="num vneg">-R$ 41.959,86</td></tr><tr><td><span class="uctag">INFRA E URBANIZAÇÃO</span></td><td>05.011.003.009 · CONCRETO FCK 30 MPA SEIXO SLUMP 10+-2 - MAT.</td><td class="num">R$ 108.945,36</td><td class="num">R$ 133.770,00</td><td class="num vneg">-R$ 24.824,64</td></tr><tr><td><span class="uctag">TORRES</span></td><td>01.001.002.003 · ESTACA TIPO HÉLICE CONTÍNUA D=500MM</td><td class="num">R$ 751.232,21</td><td class="num">R$ 773.983,43</td><td class="num vneg">-R$ 22.751,22</td></tr><tr><td><span class="uctag">ADMINISTRAÇÃO DA OBRA</span></td><td>01.007.001.002 · LOCAÇÃO DE CONTAINER</td><td class="num">R$ 30.000,00</td><td class="num">R$ 51.986,58</td><td class="num vneg">-R$ 21.986,58</td></tr><tr><td><span class="uctag">ADMINISTRAÇÃO DA OBRA</span></td><td>01.007.001.004 · LOCAÇÃO DE GERADOR + DIESEL</td><td class="num">R$ 0,00</td><td class="num">R$ 20.402,50</td><td class="num vneg">-R$ 20.402,50</td></tr><tr><td><span class="uctag">INFRA E URBANIZAÇÃO</span></td><td>05.011.002.001 · ESTACA TIPO HÉLICE CONTÍNUA D=300MM</td><td class="num">R$ 4.658,23</td><td class="num">R$ 23.271,72</td><td class="num vneg">-R$ 18.613,49</td></tr><tr><td><span class="uctag">INFRA E URBANIZAÇÃO</span></td><td>05.011.001.001 · LOCAÇÃO CONVENCIONAL DE OBRA, UTILIZANDO GABARITO DE TÁBUAS CORRIDAS PONTALETADAS A CADA 2,00M - MAT.</td><td class="num">R$ 4.999,22</td><td class="num">R$ 22.266,18</td><td class="num vneg">-R$ 17.266,96</td></tr><tr><td><span class="uctag">INFRA E URBANIZAÇÃO</span></td><td>05.011.004.008 · ARMAÇÃO COM AÇO CA-50 12.50 MM, INCLUSO ESPAÇADOR, ARAME, CORTE E DOBRA - MAT.</td><td class="num">R$ 27.824,37</td><td class="num">R$ 41.949,80</td><td class="num vneg">-R$ 14.125,43</td></tr></tbody></table></div>
+</div>
+
+<div class="foot">Painel atualizado a cada SC analisada. Custo por Nível é snapshot diário (verba = orçado − comprometido); snapshot 26/10/2026. Orçamento executivo e cronograma da obra ainda sujeitos a alteração.</div>
+</div>
+<script>
+var fSt='all', fTp='all', fRp='all';
+function pickTab(el){var t=el.getAttribute('data-tab');
+ document.querySelectorAll('.tab').forEach(function(c){c.classList.remove('on');}); el.classList.add('on');
+ document.getElementById('tab-sc').classList.toggle('hide',t!=='sc');
+ document.getElementById('tab-cu').classList.toggle('hide',t!=='cu');}
+function pick(el){var f=el.getAttribute('data-f'),v=el.getAttribute('data-v');
+ document.querySelectorAll('.chip[data-f="'+f+'"]').forEach(function(c){c.classList.remove('on');});
+ el.classList.add('on'); if(f==='st'){fSt=v;}else if(f==='tp'){fTp=v;}else{fRp=v;} applyF();}
+function toggle(row){var sc=row.getAttribute('data-sc');var d=document.querySelector('.drow[data-for="'+sc+'"]');
+ if(!d)return; var open=d.classList.toggle('hide')===false; row.querySelector('.exp').textContent=open?'−':'+';}
+function applyF(){var q=document.getElementById('q').value.toLowerCase().trim();
+ var rows=[].slice.call(document.querySelectorAll('tr.rowsc'));var total=0;
+ rows.forEach(function(r){var okS=(fSt==='all')||(r.getAttribute('data-st')===fSt);
+  var okT=(fTp==='all')||(r.getAttribute('data-tp')===fTp);
+  var okR=(fRp==='all')||(r.getAttribute('data-resp')===fRp);
+  var okQ=(q==='')||(r.getAttribute('data-text').indexOf(q)>=0);var show=okS&&okT&&okR&&okQ;
+  r.classList.toggle('hide',!show);var d=document.querySelector('.drow[data-for="'+r.getAttribute('data-sc')+'"]');
+  if(!show){if(d)d.classList.add('hide');r.querySelector('.exp').textContent='+';} if(show)total++;});
+ document.getElementById('nodata').classList.toggle('hide',total>0);
+ document.getElementById('cnt').innerHTML=total===0?'Nenhum resultado':'Mostrando <b>'+total+'</b> SC(s)';}
+applyF();
+</script>
+</body></html>
